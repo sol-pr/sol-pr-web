@@ -9,7 +9,7 @@ export default function Home() {
             WELCOME <br />
             TO
           </h1>
-          <h3 className="text-5xl">sol-pr</h3>
+          <h3 className="text-5xl font-mono">sol-pr</h3>
         </div>
         <div className="">big image</div>
       </div>

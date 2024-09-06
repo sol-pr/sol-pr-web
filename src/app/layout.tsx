@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import AppWalletProvider from "../components/AppWalletProvider";
 import AppNavbar from "@/components/navbar";
+import { NextUIProvider } from "@nextui-org/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,8 +32,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppWalletProvider>
-          <AppNavbar />
-          {children}
+          <NextUIProvider>
+            <main className="dark text-foreground bg-background">
+              <AppNavbar />
+              {children}
+            </main>
+          </NextUIProvider>
         </AppWalletProvider>
       </body>
     </html>
