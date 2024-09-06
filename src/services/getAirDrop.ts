@@ -1,10 +1,11 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-const { connection } = useConnection();
-const { publicKey } = useWallet();
 
-const getAirdropOnClick = async () => {
+export const getAirdropOnClick = async () => {
+
+    const { connection } = useConnection();
+    const { publicKey } = useWallet();
     try {
         if (!publicKey) {
             throw new Error("Wallet is not Connected");

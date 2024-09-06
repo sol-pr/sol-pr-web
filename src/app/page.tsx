@@ -1,11 +1,17 @@
 "use client";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export default function Home() {
   return (
-    <main className="flex items-center justify-center min-h-screen">
-      <div className="border hover:border-slate-900 rounded">
-        <WalletMultiButton style={{}} />
+    <main className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-between w-3/4">
+        <div className="flex flex-col gap-5">
+          <h1 className="md:text-9xl font-bold">
+            WELCOME <br />
+            TO
+          </h1>
+          <h3 className="text-5xl">sol-pr</h3>
+        </div>
+        <div className="">big image</div>
       </div>
     </main>
   );
