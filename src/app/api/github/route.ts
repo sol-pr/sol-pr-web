@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
     }
 
-    const textDecoder = new TextDecoder('utf-8');
+    const textDecoder = new TextDecoder();
     const jsonString = textDecoder.decode(rawBody.value);
 
     // Başarılı yanıt dönüyoruz
