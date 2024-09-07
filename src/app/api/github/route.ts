@@ -18,7 +18,11 @@ export async function POST(req: Request) {
     const textDecoder = new TextDecoder();
     const jsonString = textDecoder.decode(rawBody.value);
 
-    const json = unescape(jsonString)
+    const RawJson = unescape(jsonString)
+
+
+
+    const json = JSON.parse(RawJson);
 
 
     // Başarılı yanıt dönüyoruz
