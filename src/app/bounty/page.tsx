@@ -1,4 +1,5 @@
 "use client";
+import MyTable from "@/components/MyTable";
 import ReturnHome from "@/components/ReturnHome";
 import { useWallet } from "@solana/wallet-adapter-react";
 import React from "react";
@@ -8,7 +9,7 @@ const Bounty = () => {
 
   return (
     <section className="flex justify-center items-center h-screen">
-      {connected ? "Bounty" : <ReturnHome />}
+      {connected ? <MyTable /> : <ReturnHome />}
     </section>
   );
 };
