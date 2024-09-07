@@ -16,19 +16,17 @@ export async function POST(req: Request) {
     }
 
     const textDecoder = new TextDecoder();
-    const jsonString = textDecoder.decode(rawBody.value);
+    const escapedJsonString = textDecoder.decode(rawBody.value);
+    const unescapedJsonString = decodeURIComponent(escapedJsonString);
 
-    const RawJson = unescape(jsonString)
-    const string = JSON.stringify(RawJson);
-    const json = JSON.parse(string);
-
-    const webhookPayload: WebhookPayload = {
-        pullRequestAuthor: json.pusher.name,
-        repoUrl: json.repository.html_url,
-        isMerged: json.ref === 'refs/heads/main' || json.ref === `refs/heads/${json.repository.default_branch}`,
-    };
+    let payload;
+    try {
+        payload = JSON.parse(unescapedJsonString);
+    } catch (error) {
+        return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 });
+    }
 
 
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', payload: webhookPayload }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', payload }, { status: 200 });
 }
