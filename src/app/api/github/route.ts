@@ -23,7 +23,11 @@ export async function POST(req: Request) {
     const convert = stringText.replace("payload=", "");
     const payload = JSON.parse(convert);
 
-
+    const webhookPayload: WebhookPayload = {
+        pullRequestAuthor: payload.pusher.name,
+        repoUrl: payload.repository.html_url,
+        isMerged: payload.ref === 'refs/heads/main' || payload.ref === `refs/heads/${payload.repository.default_branch}`,
+    };
     // Başarılı yanıt dönüyoruz
     return NextResponse.json({ message: 'Webhook processed', payload }, { status: 200 });
 }
