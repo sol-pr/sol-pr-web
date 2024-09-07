@@ -1,3 +1,4 @@
+"use client";
 import ReturnHome from "@/components/ReturnHome";
 import { useWallet } from "@solana/wallet-adapter-react";
 import React from "react";
