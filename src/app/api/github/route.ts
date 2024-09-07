@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unescape } from "querystring";
 
 export async function POST(req: Request) {
     const event = req.headers.get('x-github-event');
@@ -17,6 +18,9 @@ export async function POST(req: Request) {
     const textDecoder = new TextDecoder();
     const jsonString = textDecoder.decode(rawBody.value);
 
+    const json = unescape(jsonString)
+
+
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', payload: jsonString }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', payload: json }, { status: 200 });
 }
