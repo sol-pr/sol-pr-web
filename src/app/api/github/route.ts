@@ -19,16 +19,16 @@ export async function POST(req: Request) {
     const jsonString = textDecoder.decode(rawBody.value);
 
     const RawJson = unescape(jsonString)
-
-
-
     const string = JSON.stringify(RawJson);
-
-    // JSON verisini okuyoruz
     const json = JSON.parse(string);
 
+    const webhookPayload: WebhookPayload = {
+        pullRequestAuthor: json.pusher.name,
+        repoUrl: json.repository.html_url,
+        isMerged: json.ref === 'refs/heads/main' || json.ref === `refs/heads/${json.repository.default_branch}`,
+    };
 
 
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', payload: json }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', payload: webhookPayload }, { status: 200 });
 }
