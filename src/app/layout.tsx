@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <AppWalletProvider>
           <NextUIProvider>
-            <main className="dark text-foreground bg-background">
+            <main className="dark text-foreground bg-background purple-dark">
               <AppNavbar />
               {children}
             </main>
