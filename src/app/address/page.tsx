@@ -1,11 +1,10 @@
 "use client";
 import { getAirdropOnClick } from "@/services/getAirDrop";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
 
 export default function Address() {
-  const { publicKey } = useWallet();
+  const { publicKey, connected } = useWallet();
   const [balance, setBalance] = useState<number>(0);
 
   // code for the `getAirdropOnClick` function here
@@ -14,7 +13,7 @@ export default function Address() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-evenly p-24">
-      {publicKey ? (
+      {connected ? (
         <div className="flex flex-col gap-4">
           <h1>Your Public key is: {publicKey?.toString()}</h1>
           <h2>Your Balance is: {balance} SOL</h2>

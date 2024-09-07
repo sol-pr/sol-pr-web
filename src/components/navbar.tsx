@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import NotifyIcon from "@/app/icons/notifyIcon";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const AppNavbar = () => {
   const WalletMultiButtonDynamic = dynamic(
@@ -30,8 +31,9 @@ const AppNavbar = () => {
           className="sm:hidden"
         />
         <NavbarBrand>
-          <Link href="dashboard" color="foreground">
-            <p className="font-bold text-inherit">sol-pr</p>
+          <Link href="dashboard" color="foreground" className="gap-2">
+            <Image src={"/logo.png"} width={45} height={45} alt="logo" />
+            <p className="font-bold font-mono">sol-pr</p>
           </Link>
         </NavbarBrand>
       </NavbarContent>
