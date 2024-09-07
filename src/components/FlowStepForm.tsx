@@ -1,4 +1,4 @@
-import { CreateRepo } from "@/models/CreateRepo";
+import { CreateRepo } from "@/Schema/models/CreateRepo";
 import { Button, Card, CardBody, Input } from "@nextui-org/react";
 import Image from "next/image";
 import { useState } from "react";
