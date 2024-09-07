@@ -29,5 +29,5 @@ export async function POST(req: Request) {
         isMerged: payload.ref === 'refs/heads/main' || payload.ref === `refs/heads/${payload.repository.default_branch}`,
     };
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', payload }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', webhookPayload }, { status: 200 });
 }
