@@ -19,14 +19,7 @@ export async function POST(req: Request) {
     const escapedJsonString = textDecoder.decode(rawBody.value);
     const unescapedJsonString = decodeURIComponent(escapedJsonString);
 
-    let payload;
-    try {
-        payload = JSON.parse(unescapedJsonString);
-    } catch (error) {
-        return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 });
-    }
-
 
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', payload }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', unescapedJsonString }, { status: 200 });
 }
