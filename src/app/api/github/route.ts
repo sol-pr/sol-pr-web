@@ -8,7 +8,21 @@ export async function GET() {
 export async function POST(req: Request) {
     const event = req.headers.get('x-github-event');
 
-    const payload = await req.json();
-    return NextResponse.json({ payload }, { status: 200 });
-}
+    if (event !== 'push') {
+        return NextResponse.json({ message: 'Not a push event' }, { status: 400 });
+    }
 
+    const payload = await req.json();
+
+    // Modeli doldurmak için gerekli verileri çekiyoruz
+    const webhookPayload: WebhookPayload = {
+        pullRequestAuthor: payload.pusher.name,
+        repoUrl: payload.repository.html_url,
+        isMerged: payload.ref === 'refs/heads/main' || payload.ref === `refs/heads/${payload.repository.default_branch}`,
+    };
+
+    // Konsola yazdırıyoruz
+    console.log('Webhook Payload:', webhookPayload);
+
+    return NextResponse.json({ message: 'Webhook processed', payload: webhookPayload }, { status: 200 });
+}
