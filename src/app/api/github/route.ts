@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
 
-
-export async function GET() {
-    return NextResponse.json({ message: 'Webhook received' }, { status: 200 });
-}
-
 export async function POST(req: Request) {
     const event = req.headers.get('x-github-event');
 
@@ -12,7 +7,18 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Not a push event' }, { status: 400 });
     }
 
-    const payload = await req.json();
+    const rawBody = await req.body?.getReader().read();
+    if (!rawBody || !rawBody.value) {
+        return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
+    }
+
+    // Uint8Array'i JSON string'ine dönüştürüyoruz
+    const textDecoder = new TextDecoder('utf-8');
+    const jsonString = textDecoder.decode(rawBody.value);
+
+    // JSON string'ini JavaScript nesnesine dönüştürüyoruz
+    const payload = JSON.parse(jsonString);
+
 
     // Modeli doldurmak için gerekli verileri çekiyoruz
     const webhookPayload: WebhookPayload = {
