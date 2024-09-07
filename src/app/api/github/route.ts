@@ -19,7 +19,19 @@ export async function POST(req: Request) {
     const escapedJsonString = textDecoder.decode(rawBody.value);
     const unescapedJsonString = decodeURIComponent(escapedJsonString);
 
+    const payload = convertToJson(unescapedJsonString);
 
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ message: 'Webhook processed', unescapedJsonString }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', payload }, { status: 200 });
+}
+
+
+function convertToJson(unescapedJsonString: string): any {
+    // Step 1: Escape the string to convert it into a valid JSON string
+    const escapedJsonString = unescapedJsonString.replace(/\\\"/g, '\"');
+
+    // Step 2: Parse the valid JSON string into a JSON object
+    const jsonObject = JSON.parse(escapedJsonString);
+
+    return jsonObject;
 }
