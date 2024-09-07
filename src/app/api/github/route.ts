@@ -9,5 +9,5 @@ export async function POST(req: Request) {
 
 
 
-    return NextResponse.json({ req: req, }, { status: 200 });
+    return NextResponse.json({ req: req.body, }, { status: 200 });
 }
