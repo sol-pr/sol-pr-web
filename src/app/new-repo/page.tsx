@@ -1,8 +1,14 @@
+import ReturnHome from "@/components/ReturnHome";
+import { useWallet } from "@solana/wallet-adapter-react";
 import React from "react";
 
 const newRepo = () => {
+  const { connected } = useWallet();
+
   return (
-    <div className="h-screen flex justify-center items-center">New Repo</div>
+    <section className="flex justify-center items-center h-screen">
+      {connected ? "Bounty" : <ReturnHome />}
+    </section>
   );
 };
 

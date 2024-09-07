@@ -1,22 +1,10 @@
 "use client";
 
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useEffect } from "react";
-import Cookies from "js-cookie";
 import Icon3D from "@/components/Icon3D";
 
 export default function Home() {
-  const { publicKey } = useWallet();
-
-  useEffect(() => {
-    if (publicKey) {
-      // publicKey değerini cookie olarak sakla
-      Cookies.set("auth-token", publicKey.toString(), { expires: 7 });
-    } else {
-      // Eğer publicKey yoksa cookie'yi sil
-      Cookies.remove("auth-token");
-    }
-  }, [publicKey]);
+  const { connected } = useWallet();
 
   return (
     <main className="flex items-center justify-center h-screen">
@@ -26,7 +14,9 @@ export default function Home() {
             WELCOME <br />
             TO
           </h1>
-          <h3 className="text-5xl font-mono text-primary-500">sol-pr</h3>
+          <h3 className="text-7xl font-mono font-bold text-primary-500">
+            sol-pr
+          </h3>
         </div>
         <Icon3D />
       </div>

@@ -1,30 +1,16 @@
 "use client";
+import ReturnHome from "@/components/ReturnHome";
 import { GitGubServices } from "@/services/GithubServices";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 import React, { useState } from "react";
 
 const Dashboard = () => {
-  const [state, setState] = useState(null as any);
-  const gitgub = new GitGubServices();
-
-  React.useEffect(() => {
-    gitgub.getRepos().then((data) => {
-      setState(data);
-    });
-  }, []);
+  const { connected } = useWallet();
 
   return (
-    <section className="flex flex-col justify-center items-center h-screen">
-      Dashboard
-      <div>
-        {state &&
-          state.map((repo: any) => (
-            <div key={repo.id} className="flex justify-between gap-5">
-              <h1 className="font-bold">{repo.name}</h1>
-              <p>{repo.description}</p>
-            </div>
-          ))}
-      </div>
+    <section className="flex justify-center items-center h-screen">
+      {connected ? "Bounty" : <ReturnHome />}
     </section>
   );
 };
