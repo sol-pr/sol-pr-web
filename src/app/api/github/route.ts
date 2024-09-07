@@ -7,7 +7,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Not a push event' }, { status: 400 });
     }
 
+    const payload = await req.json();
 
 
-    return NextResponse.json({ req: req.body, }, { status: 200 });
+    return NextResponse.json({ req: payload, }, { status: 200 });
 }
