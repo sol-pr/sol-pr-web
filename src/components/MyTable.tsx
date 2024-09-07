@@ -8,16 +8,15 @@ import {
   TableCell,
   Pagination,
 } from "@nextui-org/react";
+import { Title } from "./Title";
 
 export default function MyTable() {
   return (
     <div className="flex flex-col items-center pt-40 gap-5 w-4/5 min-h-screen">
-      <div className="flex-col self-start gap-2">
-        <h1 className="text-3xl font-bold">Bounty's</h1>
-        <p className="text-gray-400">
-          You can access active bounty program using this table.
-        </p>
-      </div>
+      <Title
+        title="Bounty's"
+        description="You can access active bounty program using this table."
+      />
       <Table aria-label="Example empty table">
         <TableHeader>
           <TableColumn>Repo Name</TableColumn>
