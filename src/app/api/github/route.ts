@@ -22,7 +22,11 @@ export async function POST(req: Request) {
 
 
 
-    const json = JSON.parse(RawJson);
+    const string = JSON.stringify(RawJson);
+
+    // JSON verisini okuyoruz
+    const json = JSON.parse(string);
+
 
 
     // Başarılı yanıt dönüyoruz
