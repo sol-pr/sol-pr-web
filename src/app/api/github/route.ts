@@ -14,12 +14,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
     }
 
-    const textDecoder = new TextDecoder();
+    const textDecoder = new TextDecoder('utf-8');
     const jsonString = textDecoder.decode(rawBody.value);
 
-    // JSON verisini konsola yazdırıyoruz
-    var json = JSON.parse(jsonString);
-
     // Başarılı yanıt dönüyoruz
-    return NextResponse.json({ jsonResponse: json }, { status: 200 });
+    return NextResponse.json({ message: 'Webhook processed', payload: jsonString }, { status: 200 });
 }
