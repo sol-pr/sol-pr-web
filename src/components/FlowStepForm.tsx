@@ -1,11 +1,23 @@
 import { CreateRepo } from "@/Schema/models/CreateRepo";
-import { Button, Card, CardBody, Code, Input } from "@nextui-org/react";
+import { Button, Code, Input } from "@nextui-org/react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import {
+  clusterApiUrl,
+  Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import confetti from "canvas-confetti";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function FlowStepForm() {
   const [step, setStep] = useState(1);
+  const { publicKey, connected, sendTransaction } = useWallet();
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
   const [formData, setFormData] = useState<CreateRepo>({
     githubRepoUrl: "",
     bountyCondition: 0,
@@ -28,9 +40,7 @@ export default function FlowStepForm() {
     setStep(step - 1);
   };
 
-  const handleClick = () => {
-    console.log(formData);
-
+  const handleClick = async () => {
     confetti({
       particleCount: 150,
       spread: 60,
