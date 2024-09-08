@@ -1,5 +1,6 @@
-import { PrCountSchema } from "@/Schema/PrCount";
+import { PrCount, PrCountSchema } from "@/Schema/PrCount";
 import { User, UserSchema } from "@/Schema/User";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { serialize, deserialize } from "borsh";
 
@@ -43,39 +44,38 @@ export class SmartContractService {
         return true;
     }
 
-    //     async prCount() => {
-    //     const pr_count = new PrCount();
-    //     pr_count.prcount = 0;
+    async prCount(publickey: PublicKey) {
+        const pr_count = new PrCount(BigInt(0));
 
-    //     const encoded = serialize(PrCountSchema, this.pr_count);
-    //     const concat = Uint8Array.of(1, ...encoded);
+        const encoded = serialize(PrCountSchema, pr_count);
+        const concat = Uint8Array.of(1, ...encoded);
 
-    //     const user_data = await this.connection.getAccountInfo(user);
-    //     const user_deserialized = deserialize(UserSchema, User, user_data.data);
+        const user_data = await this.connection.getAccountInfo(publickey);
+        const user_deserialized = deserialize(UserSchema, User, user_data?.data);
 
-    //     const PrCountPda = PublicKey.findProgramAddressSync([Buffer.from("pull request counter"), Buffer.from(this.user_deserialized.phantom_wallet)], this.program_id);
+        const PrCountPda = PublicKey.findProgramAddressSync([Buffer.from("pull request counter"), Buffer.from(this.user_deserialized.phantom_wallet)], this.program_id);
 
-    //     const instruction = new TransactionInstruction({
-    //         keys: [
-    //             { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
-    //             { pubkey: this.PrCountPda[0], isSigner: false, isWritable: true },
-    //             { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-    //         ],
-    //         data: Buffer.from(concat),
-    //         programId: this.program_id,
-    //     });
+        const instruction = new TransactionInstruction({
+            keys: [
+                { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                { pubkey: this.PrCountPda[0], isSigner: false, isWritable: true },
+                { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+            ],
+            data: Buffer.from(concat),
+            programId: this.program_id,
+        });
 
-    //     const message = new TransactionMessage({
-    //         instructions: [instruction],
-    //         payerKey: this.payer.publicKey,
-    //         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
-    //     }).compileToV0Message();
+        const message = new TransactionMessage({
+            instructions: [instruction],
+            payerKey: this.payer.publicKey,
+            recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+        }).compileToV0Message();
 
-    //     const tx = new VersionedTransaction(message);
+        const tx = new VersionedTransaction(message);
 
-    //     tx.sign([this.payer]);
-    //     this.connection.sendTransaction(tx);
+        tx.sign([this.payer]);
+        this.connection.sendTransaction(tx);
 
-    //     return true; 4
-    // }
+        return true;
+    }
 }
