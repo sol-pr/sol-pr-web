@@ -1,3 +1,5 @@
+import { serialize, deserialize, Schema } from "borsh";
+
 export class GithubRepo {
     repo_url: string = "";
     total_pull_requests: number = 0;

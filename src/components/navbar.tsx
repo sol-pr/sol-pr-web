@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -14,8 +14,26 @@ import {
 import NotifyIcon from "@/app/icons/notifyIcon";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { SmartContractService } from "@/services/SmartContractService";
 
 const AppNavbar = () => {
+  const { connected, publicKey } = useWallet();
+  const smartContract = new SmartContractService();
+  const handleWalletConnected = useCallback(() => {
+    if (connected && publicKey) {
+      console.log("Cüzdan Bağlandı:", publicKey.toString());
+      // smartContract.createUser(
+      //   "bgraokmush",
+      //   Uint8Array.from(publicKey.toBytes())
+      // );
+    }
+  }, [connected, publicKey]);
+
+  useEffect(() => {
+    handleWalletConnected();
+  }, [connected, handleWalletConnected]);
+
   const WalletMultiButtonDynamic = dynamic(
     async () =>
       (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,

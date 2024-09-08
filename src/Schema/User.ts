@@ -1,3 +1,5 @@
+import { serialize, deserialize, Schema } from "borsh";
+
 export class User {
     user_name: string = "";
     phantom_wallet: Uint8Array = new Uint8Array(32);

@@ -1,3 +1,5 @@
+import { serialize, deserialize, Schema } from "borsh";
+
 export class PrCount {
     prcount: bigint = BigInt(0);
 
