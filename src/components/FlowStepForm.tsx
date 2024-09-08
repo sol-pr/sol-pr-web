@@ -1,5 +1,6 @@
 import { CreateRepo } from "@/Schema/models/CreateRepo";
-import { Button, Card, CardBody, Input } from "@nextui-org/react";
+import { Button, Card, CardBody, Code, Input } from "@nextui-org/react";
+import confetti from "canvas-confetti";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -25,6 +26,15 @@ export default function FlowStepForm() {
 
   const prevStep = () => {
     setStep(step - 1);
+  };
+
+  const handleClick = () => {
+    console.log(formData);
+
+    confetti({
+      particleCount: 150,
+      spread: 60,
+    });
   };
 
   return (
@@ -68,9 +78,11 @@ export default function FlowStepForm() {
               />
             </div>
             <p className="w-3/4 text-center">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Reiciendis sapiente quia, officiis amet harum rerum. Placeat eius
-              hic dolores qui.
+              First, go to the settings tab of the GitHub repository where you
+              want to create a bounty. Then, select the Webhooks option from the
+              menu. Next, create a new webhook and paste the following URL:{" "}
+              <Code>https://sol-pr-web.vercel.app/api/github</Code> <br />{" "}
+              That's it! You can now proceed.
             </p>
           </div>
         )}
@@ -104,7 +116,7 @@ export default function FlowStepForm() {
           </Button>
         )}
         {step === 3 && (
-          <Button onClick={() => console.log(formData)} color="primary">
+          <Button onClick={() => handleClick()} color="primary">
             Submit
           </Button>
         )}

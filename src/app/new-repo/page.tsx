@@ -8,7 +8,7 @@ const newRepo = () => {
   const { connected } = useWallet();
 
   return (
-    <section className="flex justify-center items-center h-screen">
+    <section className="flex justify-center items-center w-screen h-screen">
       {connected ? <CreateRepo /> : <ReturnHome />}
     </section>
   );
