@@ -1,4 +1,5 @@
 "use client";
+import PopularBounties from "@/components/dashboard/PopularBounties";
 import TotalEarn from "@/components/dashboard/TotalEarn";
 import ReturnHome from "@/components/ReturnHome";
 import { Title } from "@/components/Title";
@@ -9,12 +10,12 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import React, { useState } from "react";
 
 const componentsList = [
-  <TotalEarn />, // 1. bileşen
-  <div>Component 2</div>, // 2. bileşen
-  <div>Component 3</div>, // 3. bileşen
-  <div>Component 4 (Geniş)</div>, // 4. bileşen - geniş olacak
-  <div>Component 5</div>, // 5. bileşen
-  <div>Component 6</div>, // 6. bileşen
+  <TotalEarn />,
+  <div>Component 2</div>,
+  <div>Component 3</div>,
+  <PopularBounties />,
+  <div>Component 5</div>,
+  <div>Component 6</div>,
 ];
 
 const Dashboard = () => {
