@@ -48,7 +48,7 @@ export class SmartContractService {
 
 
     async checkUser(publickey: PublicKey): Promise<boolean> {
-        return false;
+        return true;
     }
 
 }

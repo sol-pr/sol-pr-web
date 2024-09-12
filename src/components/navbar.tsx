@@ -77,6 +77,7 @@ const AppNavbar = () => {
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
         className="fixed top-0 dark text-foreground bg-background purple-dark"
+        
       >
         <NavbarContent>
           <NavbarMenuToggle
