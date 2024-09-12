@@ -6,10 +6,10 @@ import { serialize, deserialize } from "borsh";
 
 export class SmartContractService {
 
-    program_id = new PublicKey("");
-    privateKey = []
-    payer = Keypair.fromSecretKey(Uint8Array.from(this.privateKey));
-    connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    //program_id = new PublicKey("6mqu7HFkZEqHebJrZ77L7zReTCCnJsW89YyLFn7bmMHf");
+    //privateKey = [];
+    //payer = Keypair.fromSecretKey(Uint8Array.from(this.privateKey));
+    //connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
     async createUser(username: string, pubkey: Uint8Array): Promise<boolean> {
         return true;

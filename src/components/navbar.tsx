@@ -34,6 +34,7 @@ const AppNavbar = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const menuItems = ["Bounty", "New Repo", "Account"];
+  const menuLinks = ["/bounty", "/new-repo", "/my-account"];
 
   const [formData, setFormData] = useState<Register>({
     githubUsername: "",
@@ -73,7 +74,10 @@ const AppNavbar = () => {
 
   return (
     <>
-      <Navbar onMenuOpenChange={setIsMenuOpen} className="fixed top-0">
+      <Navbar
+        onMenuOpenChange={setIsMenuOpen}
+        className="fixed top-0 dark text-foreground bg-background purple-dark"
+      >
         <NavbarContent>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -116,19 +120,13 @@ const AppNavbar = () => {
             </Button>
           </NavbarItem>
         </NavbarContent>
-        <NavbarMenu>
+        <NavbarMenu className="dark text-foreground bg-background purple-dark">
           {menuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === menuItems.length - 1
-                    ? "danger"
-                    : "foreground"
-                }
                 className="w-full"
-                href="#"
+                color="foreground"
+                href={menuLinks[index]}
                 size="lg"
               >
                 {item}
