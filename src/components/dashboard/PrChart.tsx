@@ -1,5 +1,9 @@
+"use client";
+import dynamic from "next/dynamic";
 import React from "react";
-import Chart, { Props } from "react-apexcharts";
+import { Props } from "react-apexcharts";
+
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const state: Props["series"] = [
   {
