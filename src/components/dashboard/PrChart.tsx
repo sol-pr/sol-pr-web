@@ -4,7 +4,7 @@ import Chart, { Props } from "react-apexcharts";
 const state: Props["series"] = [
   {
     name: "PR",
-    data: [12, 2, 3, 1, 6, 8, 7],
+    data: [5, 2, 4, 3, 6, 4, 7],
   },
 ];
 
