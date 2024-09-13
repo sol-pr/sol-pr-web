@@ -28,6 +28,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.95.3",
     "@splinetool/react-spline": "^4.0.0",
+    "apexcharts": "^3.53.0",
     "borsh": "0.7.0",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^11.5.4",
