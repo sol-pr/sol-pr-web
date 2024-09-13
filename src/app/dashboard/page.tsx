@@ -1,6 +1,7 @@
 "use client";
 import CreateBounty from "@/components/dashboard/CreateBounty";
 import PopularBounties from "@/components/dashboard/PopularBounties";
+import { PrChart } from "@/components/dashboard/PrChart";
 import TotalEarn from "@/components/dashboard/TotalEarn";
 import ReturnHome from "@/components/ReturnHome";
 import { Title } from "@/components/Title";
@@ -13,7 +14,7 @@ import React, { useState } from "react";
 const componentsList = [
   <TotalEarn />,
   <CreateBounty />,
-  <div>Daily PR</div>,
+  <PrChart />,
   <PopularBounties />,
   <div>Component 5</div>,
   <div>Component 6</div>,
