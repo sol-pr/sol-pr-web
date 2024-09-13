@@ -58,6 +58,8 @@ const AppNavbar = () => {
       const hasUser = await smartContract.checkUser(publicKey);
       if (!hasUser) {
         onOpen();
+      } else {
+        router.push("/dashboard");
       }
     }
   }, [connected, publicKey]);
@@ -77,7 +79,6 @@ const AppNavbar = () => {
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
         className="fixed top-0 dark text-foreground bg-background purple-dark"
-        
       >
         <NavbarContent>
           <NavbarMenuToggle
