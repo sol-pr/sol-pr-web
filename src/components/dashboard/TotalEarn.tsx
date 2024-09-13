@@ -13,7 +13,7 @@ const TotalEarn = () => {
         size={240}
       />
       <h2 className="font-semibold z-20">Total Earn</h2>
-      <p className="text-5xl font-bold text-primary-500 z-20">0.00 SOL</p>
+      <p className="text-5xl font-black text-primary-500 z-20">0.00 SOL</p>
       <Button
         color="default"
         className="z-20"

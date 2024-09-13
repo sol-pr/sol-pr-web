@@ -1,4 +1,5 @@
 "use client";
+import CreateBounty from "@/components/dashboard/CreateBounty";
 import PopularBounties from "@/components/dashboard/PopularBounties";
 import TotalEarn from "@/components/dashboard/TotalEarn";
 import ReturnHome from "@/components/ReturnHome";
@@ -11,8 +12,8 @@ import React, { useState } from "react";
 
 const componentsList = [
   <TotalEarn />,
-  <div>Component 2</div>,
-  <div>Component 3</div>,
+  <CreateBounty />,
+  <div>Daily PR</div>,
   <PopularBounties />,
   <div>Component 5</div>,
   <div>Component 6</div>,
