@@ -59,7 +59,6 @@ const AppNavbar = () => {
       if (!hasUser) {
         onOpen();
       } else {
-        router.push("/dashboard");
       }
     }
   }, [connected, publicKey]);
