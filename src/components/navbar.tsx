@@ -25,6 +25,7 @@ import { SmartContractService } from "@/services/SmartContractService";
 import { BellRing, Github } from "lucide-react";
 import { Register } from "@/Schema/models/Register";
 import { useRouter, usePathname } from "next/navigation";
+import toast from "react-hot-toast";
 
 const AppNavbar = () => {
   const router = useRouter();
@@ -52,6 +53,15 @@ const AppNavbar = () => {
   const handleClick = async () => {
     console.log(formData);
     router.push("/dashboard");
+    toast.success(`Welcome ${formData.githubUsername}`, {
+      icon: "👋",
+      style: {
+        backgroundColor: "#000",
+        borderBlockStyle: "solid",
+        color: "#fff",
+        border: "2px solid #FFFFFF40",
+      },
+    });
   };
 
   const handleWalletConnected = useCallback(async () => {
@@ -60,7 +70,18 @@ const AppNavbar = () => {
       if (!hasUser) {
         onOpen();
       } else {
-        if (pathname === "/") router.push("/dashboard");
+        if (pathname === "/") {
+          toast.success("Welcome back!", {
+            icon: "👋",
+            style: {
+              backgroundColor: "#000",
+              borderBlockStyle: "solid",
+              color: "#fff",
+              border: "2px solid #FFFFFF40",
+            },
+          });
+          router.push("/dashboard");
+        }
       }
     }
   }, [connected, publicKey]);

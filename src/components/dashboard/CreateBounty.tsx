@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/button";
-import { BadgePlus, GitBranchPlus } from "lucide-react";
+import { BadgePlus } from "lucide-react";
 import React from "react";
 
 const CreateBounty = () => {

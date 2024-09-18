@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Spinner } from "@nextui-org/spinner";
+import { motion } from "framer-motion";
+
 function Loader({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,16 @@ function Loader({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50 }} // Başlangıç durumu
+      animate={{ opacity: 1, y: 0 }} // Animasyon son durumu
+      transition={{ duration: 0.5 }} // Geçiş süresi (0.5 saniye)
+      className="overflow-hidden"
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export default Loader;
