@@ -4,6 +4,7 @@ import "./globals.css";
 import AppWalletProvider from "../components/AppWalletProvider";
 import AppNavbar from "@/components/navbar";
 import { NextUIProvider } from "@nextui-org/react";
+import Loader from "@/components/Loader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,7 +36,7 @@ export default function RootLayout({
           <NextUIProvider>
             <main className="dark text-foreground bg-background purple-dark">
               <AppNavbar />
-              {children}
+              <Loader>{children}</Loader>
             </main>
           </NextUIProvider>
         </AppWalletProvider>

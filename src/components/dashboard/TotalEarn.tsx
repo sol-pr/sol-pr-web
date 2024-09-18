@@ -1,11 +1,13 @@
 import { Button } from "@nextui-org/button";
 import { CardBody } from "@nextui-org/card";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { CircleDollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 const TotalEarn = () => {
   const router = useRouter();
+  const { publicKey } = useWallet();
   return (
     <CardBody className="flex flex-col justify-center relative items-center h-full gap-3">
       <CircleDollarSign
