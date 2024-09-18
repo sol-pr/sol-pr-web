@@ -1,11 +1,12 @@
 "use client";
+import CreateBadge from "@/components/dashboard/CreateBadge";
 import CreateBounty from "@/components/dashboard/CreateBounty";
+import LastNotification from "@/components/dashboard/LastNotification";
 import PopularBounties from "@/components/dashboard/PopularBounties";
 import { PrChart } from "@/components/dashboard/PrChart";
 import TotalEarn from "@/components/dashboard/TotalEarn";
 import ReturnHome from "@/components/ReturnHome";
 import { Title } from "@/components/Title";
-import { GitGubServices } from "@/services/GithubServices";
 import { Card } from "@nextui-org/card";
 import { useWallet } from "@solana/wallet-adapter-react";
 
@@ -16,8 +17,8 @@ const componentsList = [
   <CreateBounty />,
   <PrChart />,
   <PopularBounties />,
-  <div>Component 5</div>,
-  <div>Component 6</div>,
+  <LastNotification />,
+  <CreateBadge />,
 ];
 
 const Dashboard = () => {

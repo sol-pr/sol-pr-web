@@ -24,12 +24,13 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { SmartContractService } from "@/services/SmartContractService";
 import { BellRing, Github } from "lucide-react";
 import { Register } from "@/Schema/models/Register";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const AppNavbar = () => {
   const router = useRouter();
   const { connected, publicKey } = useWallet();
   const smartContract = new SmartContractService();
+  const pathname = usePathname();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -59,6 +60,7 @@ const AppNavbar = () => {
       if (!hasUser) {
         onOpen();
       } else {
+        if (pathname === "/") router.push("/dashboard");
       }
     }
   }, [connected, publicKey]);
