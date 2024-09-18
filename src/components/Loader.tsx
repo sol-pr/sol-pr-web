@@ -11,7 +11,7 @@ function Loader({ children }: { children: React.ReactNode }) {
     // 1 saniye sonra loader'ı kaldır
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 450);
+    }, 250);
 
     return () => clearTimeout(timer); // Cleanup
   }, []);
