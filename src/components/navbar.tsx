@@ -50,18 +50,39 @@ const AppNavbar = () => {
     });
   };
 
-  const handleClick = async () => {
-    console.log(formData);
-    router.push("/dashboard");
-    toast.success(`Welcome ${formData.githubUsername}`, {
-      icon: "👋",
-      style: {
-        backgroundColor: "#000",
-        borderBlockStyle: "solid",
-        color: "#fff",
-        border: "2px solid #FFFFFF40",
-      },
-    });
+  const handleResigter = async () => {
+    if (connected && publicKey) {
+      const response = await smartContract.createUser(
+        formData.githubUsername,
+        publicKey.toBytes()
+      );
+
+      if (!response) {
+        toast.error(`someting wrong :()`, {
+          icon: "😥",
+          style: {
+            backgroundColor: "#000",
+            borderBlockStyle: "solid",
+            color: "#fff",
+            border: "2px solid #FFFFFF40",
+          },
+        });
+        router.push("/");
+      }
+      if (pathname === "/") {
+        router.push("/dashboard");
+      }
+
+      toast.success(`Welcome ${formData.githubUsername}`, {
+        icon: "👋",
+        style: {
+          backgroundColor: "#000",
+          borderBlockStyle: "solid",
+          color: "#fff",
+          border: "2px solid #FFFFFF40",
+        },
+      });
+    }
   };
 
   const handleWalletConnected = useCallback(async () => {
@@ -199,7 +220,7 @@ const AppNavbar = () => {
                 <Button
                   color="primary"
                   onPress={onClose}
-                  onClick={() => handleClick()}
+                  onClick={() => handleResigter()}
                 >
                   Register!
                 </Button>
