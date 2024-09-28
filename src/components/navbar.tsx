@@ -66,12 +66,12 @@ const AppNavbar = () => {
 
   const handleWalletConnected = useCallback(async () => {
     if (connected && publicKey) {
-      const hasUser = await smartContract.checkUser(publicKey);
-      if (!hasUser) {
+      const hasUser = await smartContract.getUser(publicKey.toBytes());
+      if (!hasUser.isSuccessful) {
         onOpen();
       } else {
         if (pathname === "/") {
-          toast.success("Welcome back!", {
+          toast.success(`Welcome back, ${hasUser.user?.github_username}! `, {
             icon: "👋",
             style: {
               backgroundColor: "#000",
