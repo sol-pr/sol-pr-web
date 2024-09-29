@@ -12,6 +12,7 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
+import { TipLinkWalletAdapter } from "@tiplink/wallet-adapter";
 // import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 // Default styles that can be overridden by your app
@@ -30,6 +31,11 @@ export default function AppWalletProvider({
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
+      new TipLinkWalletAdapter({
+        title: "Login with Google",
+        clientId: "694bf97c-d2ac-4dfc-a786-a001812658df",
+        theme: "dark", // pick between "dark"/"light"/"system"
+      }),
 
       // manually add any legacy wallet adapters here
       // new UnsafeBurnerWalletAdapter(),
