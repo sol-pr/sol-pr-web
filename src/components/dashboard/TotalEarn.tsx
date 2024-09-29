@@ -5,7 +5,11 @@ import { CircleDollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const TotalEarn = () => {
+type Props = {
+  totalEarn: string;
+};
+
+const TotalEarn = ({ totalEarn }: Props) => {
   const router = useRouter();
   const { publicKey } = useWallet();
   return (
@@ -15,7 +19,9 @@ const TotalEarn = () => {
         size={240}
       />
       <h2 className="font-semibold z-20">Total Earn</h2>
-      <p className="text-5xl font-black text-primary-500 z-20">0.00 SOL</p>
+      <p className="text-5xl font-black text-primary-500 z-20">
+        {totalEarn} SOL
+      </p>
       <Button
         color="default"
         className="z-20"
