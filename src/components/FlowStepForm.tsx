@@ -50,48 +50,51 @@ export default function FlowStepForm() {
   };
 
   const handleClick = async () => {
-    const repo = await gitGubServices.getRepoDetails(
-      "bgraokmush",
-      formData.githubRepoUrl
-    );
+    if (connected && publicKey) {
+      const user = await smartContractService.getUser(publicKey?.toBytes());
+      const repo = await gitGubServices.getRepoDetails(
+        user.user?.github_username || "",
+        formData.githubRepoUrl
+      );
 
-    repo.pull_request_limit = BigInt(formData.bountyCondition);
-    repo.owner_wallet_address = publicKey?.toBytes() || new Uint8Array(32);
-    repo.reward_per_pull_request = BigInt(
-      formData.bountyPrice * LAMPORTS_PER_SOL
-    );
+      repo.pull_request_limit = BigInt(formData.bountyCondition);
+      repo.owner_wallet_address = publicKey?.toBytes() || new Uint8Array(32);
+      repo.reward_per_pull_request = BigInt(
+        formData.bountyPrice * LAMPORTS_PER_SOL
+      );
 
-    const response = await smartContractService.createRepository(repo);
+      const response = await smartContractService.createRepository(repo);
 
-    if (response) {
-      confetti({
-        particleCount: 150,
-        spread: 60,
-      });
+      if (response) {
+        confetti({
+          particleCount: 150,
+          spread: 60,
+        });
 
-      toast.success("Bounty created successfully", {
-        icon: "🎉",
-        style: {
-          backgroundColor: "#000",
-          borderBlockStyle: "solid",
-          color: "#fff",
-          border: "2px solid #FFFFFF40",
-        },
-      });
+        toast.success("Bounty created successfully", {
+          icon: "🎉",
+          style: {
+            backgroundColor: "#000",
+            borderBlockStyle: "solid",
+            color: "#fff",
+            border: "2px solid #FFFFFF40",
+          },
+        });
 
-      // setTimeout(() => {
-      //   router.push("/dashboard");
-      // }, 500);
-    } else {
-      toast.error(`someting wrong`, {
-        icon: "😥",
-        style: {
-          backgroundColor: "#000",
-          borderBlockStyle: "solid",
-          color: "#fff",
-          border: "2px solid #FFFFFF40",
-        },
-      });
+        // setTimeout(() => {
+        //   router.push("/dashboard");
+        // }, 500);
+      } else {
+        toast.error(`someting wrong`, {
+          icon: "😥",
+          style: {
+            backgroundColor: "#000",
+            borderBlockStyle: "solid",
+            color: "#fff",
+            border: "2px solid #FFFFFF40",
+          },
+        });
+      }
     }
   };
 
