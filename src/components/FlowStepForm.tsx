@@ -81,9 +81,9 @@ export default function FlowStepForm() {
           },
         });
 
-        // setTimeout(() => {
-        //   router.push("/dashboard");
-        // }, 500);
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 500);
       } else {
         toast.error(`someting wrong`, {
           icon: "😥",
