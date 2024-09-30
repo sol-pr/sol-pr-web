@@ -29,7 +29,7 @@ export class SmartContractService {
 
             const encoded = serialize(UserForCreateShema, userCreate);
             const concat = Uint8Array.of(2, ...encoded);
-
+            
             const userPDA = PublicKey.findProgramAddressSync([Buffer.from("user_pda"), Buffer.from(pubkey)], this.programId);
 
 

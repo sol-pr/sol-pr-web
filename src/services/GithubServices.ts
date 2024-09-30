@@ -10,6 +10,7 @@ export class GitGubServices {
 
     async getRepoDetails(username: string, repoUrl: string): Promise<GithubRepo> {
         const repoName = repoUrl.split('/').pop();
+        console.log(`https://api.github.com/repos/${username}/${repoName}`);
 
         const response = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
         const data = await response.json();
