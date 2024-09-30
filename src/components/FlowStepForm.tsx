@@ -1,5 +1,5 @@
 import { CreateRepo } from "@/Schema/models/CreateRepo";
-import { Button, Code, Input } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   clusterApiUrl,
@@ -12,6 +12,8 @@ import {
 import confetti from "canvas-confetti";
 import Image from "next/image";
 import { useState } from "react";
+import { Snippet } from "@nextui-org/snippet";
+import { motion } from "framer-motion"; // Framer Motion importu
 
 export default function FlowStepForm() {
   const [step, setStep] = useState(1);
@@ -47,86 +49,130 @@ export default function FlowStepForm() {
     });
   };
 
-  return (
-    <div className="flow-step-form flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
-        {step === 1 && (
-          <div className="flex w-fullflex-wrap md:flex-nowrap gap-4">
-            <Input
-              type="text"
-              label="Github Repo Url"
-              name="githubRepoUrl"
-              value={formData.githubRepoUrl}
-              onChange={handleInputChange}
-            />
-          </div>
-        )}
+  // Framer Motion animasyon ayarları
+  const variants = {
+    hidden: { opacity: 0, y: -100 }, // Yukarıdan başlar
+    visible: { opacity: 1, y: 0 }, // Aşağıya doğru iner
+    exit: { opacity: 0, y: 100 }, // Aşağıya kaybolur
+  };
 
-        {step === 2 && (
-          <div className="flex flex-col justify-center items-center gap-5">
-            <div className="flex items-center justify-center w-full gap-5">
-              <Image
-                src={"/repo-1.png"}
-                width={300}
-                height={300}
-                alt=""
-                className="border-3 border-gray-600 rounded-xl"
-              />
-              <Image
-                src={"/repo-2.png"}
-                width={300}
-                height={300}
-                alt=""
-                className="border-3 border-gray-600 rounded-xl"
-              />
-              <Image
-                src={"/repo-3.png"}
-                width={300}
-                height={300}
-                alt=""
-                className="border-3 border-gray-600 rounded-xl"
+  return (
+    <div className="flow-step-form flex flex-col h-full mt-12">
+      <div className="flex-1 overflow-y-auto">
+        <motion.div
+          key={step} // Her adım için benzersiz anahtar
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={variants}
+          transition={{ duration: 0.5 }} // Animasyonun süresi
+        >
+          {step === 1 && (
+            <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+              <Input
+                type="text"
+                label="Github Repo Url"
+                name="githubRepoUrl"
+                value={formData.githubRepoUrl}
+                onChange={handleInputChange}
               />
             </div>
-            <p className="w-3/4 text-center">
-              First, go to the settings tab of the GitHub repository where you
-              want to create a bounty. Then, select the Webhooks option from the
-              menu. Next, create a new webhook and paste the following URL:{" "}
-              <Code>https://sol-pr-web.vercel.app/api/github</Code> <br />{" "}
-              That's it! You can now proceed.
-            </p>
-          </div>
-        )}
+          )}
 
-        {step === 3 && (
-          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input
-              type="number"
-              label="Bounty condition"
-              name="bountyCondition"
-              value={formData.bountyCondition.toString()}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="number"
-              label="Bounty Price"
-              name="bountyPrice"
-              value={formData.bountyPrice.toString()}
-              onChange={handleInputChange}
-            />
-          </div>
-        )}
+          {step === 2 && (
+            <div className="flex flex-col justify-center items-center gap-5 max-w-96">
+              <Image
+                src={"/repo-1.png"}
+                width={400}
+                height={400}
+                alt=""
+                className="border-3 border-gray-600 rounded-xl"
+              />
+              <p className="text-center">
+                First, go to the settings tab of the GitHub repository where you
+                want to create a bounty.
+              </p>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="flex flex-col justify-center items-center gap-5 max-w-96">
+              <div className="flex">
+                <Image
+                  src={"/repo-2.png"}
+                  width={400}
+                  height={400}
+                  alt=""
+                  className="border-3 border-gray-600 rounded-xl"
+                />
+              </div>
+              <p className="text-center">
+                Then, select the Webhooks option from left menu bar for next
+                step.
+              </p>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="flex flex-col justify-center items-center gap-5 max-w-96">
+              <Image
+                src={"/repo-3.png"}
+                width={400}
+                height={400}
+                alt=""
+                className="border-3 border-gray-600 rounded-xl"
+              />
+              <p className="text-center">
+                Next, create a new webhook and paste this;
+              </p>
+              <Snippet>https://sol-pr-web.vercel.app/api/github</Snippet>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4 ">
+              <Input
+                type="number"
+                label="Bounty condition"
+                name="bountyCondition"
+                value={formData.bountyCondition.toString()}
+                onChange={handleInputChange}
+              />
+              <Input
+                type="number"
+                label="Bounty Price"
+                name="bountyPrice"
+                value={formData.bountyPrice.toString()}
+                onChange={handleInputChange}
+                endContent="Sol"
+              />
+            </div>
+          )}
+        </motion.div>
       </div>
 
-      <div className="flex justify-between items-center mt-4 fixed bottom-0 left-0 right-0 p-4">
-        {step > 1 && <Button onClick={prevStep}>Previous</Button>}
+      <div className="flex justify-between items-center mt-4 relative">
+        {step > 1 && (
+          <Button onClick={prevStep} className="absolute top-8 left-0">
+            Previous
+          </Button>
+        )}
 
-        {step < 3 && (
-          <Button onClick={nextStep} color="primary">
+        {step < 5 && (
+          <Button
+            onClick={nextStep}
+            color="primary"
+            className="absolute top-8 right-0"
+          >
             Next
           </Button>
         )}
-        {step === 3 && (
-          <Button onClick={() => handleClick()} color="primary">
+        {step === 5 && (
+          <Button
+            onClick={() => handleClick()}
+            color="primary"
+            className="absolute top-8 right-0"
+          >
             Submit
           </Button>
         )}

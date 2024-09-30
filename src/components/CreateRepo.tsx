@@ -4,7 +4,7 @@ import FlowStepForm from "./FlowStepForm";
 
 const CreateRepo = () => {
   return (
-    <div className="flex-col gap-10 self-start justify-center pt-32 w-fit">
+    <div className="flex-col self-start justify-center pt-14 w-fit">
       <Title
         title={"Create Bounty!"}
         description={"You can create boundy for submited pull-requests!"}
