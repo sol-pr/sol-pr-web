@@ -1,8 +1,10 @@
 import { Button } from "@nextui-org/button";
 import { BadgePlus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const CreateBounty = () => {
+  const router = useRouter();
   return (
     <div className="flex flex-col justify-center items-center h-full gap-3 relative">
       <BadgePlus
@@ -15,7 +17,12 @@ const CreateBounty = () => {
       <p className="max-w-48 text-center leading-5 text-foreground-400 z-10">
         You can create bounty for your repos right now
       </p>
-      <Button color="primary" variant="shadow" className="font-bold z-10">
+      <Button
+        color="primary"
+        variant="shadow"
+        className="font-bold z-10"
+        onClick={() => router.push("/new-repo")}
+      >
         Create!
       </Button>
     </div>

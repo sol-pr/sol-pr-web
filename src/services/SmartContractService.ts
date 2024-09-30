@@ -28,7 +28,7 @@ export class SmartContractService {
             const userCreate = new UserForCreate({ github_username, pubkey });
 
             const encoded = serialize(UserForCreateShema, userCreate);
-            const concat = Uint8Array.of(1, ...encoded);
+            const concat = Uint8Array.of(2, ...encoded);
 
             const userPDA = PublicKey.findProgramAddressSync([Buffer.from("user_pda"), Buffer.from(pubkey)], this.programId);
 
@@ -42,7 +42,7 @@ export class SmartContractService {
                 ],
                 data: Buffer.from(concat),
                 programId: this.programId
-            });
+            })
 
             const message = new TransactionMessage({
                 instructions: [instruction],
@@ -50,11 +50,13 @@ export class SmartContractService {
                 recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash
             }).compileToV0Message();
 
+
             const tx = new VersionedTransaction(message);
             tx.sign([this.payer]);
 
             this.connection.sendTransaction(tx);
-            console.log("New users account => " + userPDA[0]);
+            console.log("New users account => " + userPDA[0])
+
             return true;
         } catch (error) {
             return false;
