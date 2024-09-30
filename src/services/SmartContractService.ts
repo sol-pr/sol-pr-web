@@ -1,9 +1,12 @@
 
 import { UserResponse } from "@/Schema/models/User/UserResponse";
+import { GithubRepo, GithubRepoShema } from "@/Schema/Repository";
 import { User, UserShema } from "@/Schema/User";
 import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
-import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { deserialize, serialize } from "borsh";
+import toast from "react-hot-toast";
+import { Md5 } from "ts-md5";
 export class SmartContractService {
 
     connection: Connection;
@@ -73,6 +76,72 @@ export class SmartContractService {
         console.log("CurrentUser->", user_deserialized.github_username.toString());
 
         return { isSuccessful: true, message: "user successfuly get.", user: user_deserialized };
+
+    }
+
+    async createRepository(repo: GithubRepo): Promise<boolean> {
+
+        try {
+            const encoded = serialize(GithubRepoShema, repo);
+            const concat = Uint8Array.of(4, ...encoded);
+
+
+            const repoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(repo.id)], this.programId);
+
+            const instruction = new TransactionInstruction({
+                keys: [
+                    { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: repoPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+
+                ],
+                data: Buffer.from(concat),
+                programId: this.programId
+            });
+
+            const message = new TransactionMessage({
+                instructions: [instruction],
+                payerKey: this.payer.publicKey,
+                recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash
+            }).compileToV0Message();
+
+
+            const tx = new VersionedTransaction(message);
+            tx.sign([this.payer]);
+
+            const response = await this.connection.sendTransaction(tx).catch((error: SendTransactionError) => {
+                //const message = error.logs?.[2];
+                const message = "Repository already exists";
+                toast.error(message || "", {
+                    style: {
+                        backgroundColor: "#000",
+                        borderBlockStyle: "solid",
+                        color: "#fff",
+                        border: "2px solid #FFFFFF40",
+                    },
+                });
+                return false;
+            });
+
+            if (!response)
+                return false;
+
+            console.log("New Repository account => " + repoPDA[0])
+
+            toast.success(repoPDA[0].toString(), {
+                style: {
+                    backgroundColor: "#000",
+                    borderBlockStyle: "solid",
+                    color: "#fff",
+                    border: "2px solid #FFFFFF40",
+                },
+            });
+            return true;
+
+        }
+        catch (error) {
+            return false;
+        }
 
     }
 

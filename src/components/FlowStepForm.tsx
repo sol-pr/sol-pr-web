@@ -14,11 +14,18 @@ import Image from "next/image";
 import { useState } from "react";
 import { Snippet } from "@nextui-org/snippet";
 import { motion } from "framer-motion"; // Framer Motion importu
+import { GitGubServices } from "@/services/GithubServices";
+import { SmartContractService } from "@/services/SmartContractService";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function FlowStepForm() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const { publicKey, connected, sendTransaction } = useWallet();
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+  const gitGubServices = new GitGubServices();
+  const smartContractService = new SmartContractService();
 
   const [formData, setFormData] = useState<CreateRepo>({
     githubRepoUrl: "",
@@ -43,10 +50,49 @@ export default function FlowStepForm() {
   };
 
   const handleClick = async () => {
-    confetti({
-      particleCount: 150,
-      spread: 60,
-    });
+    const repo = await gitGubServices.getRepoDetails(
+      "bgraokmush",
+      formData.githubRepoUrl
+    );
+
+    repo.pull_request_limit = BigInt(formData.bountyCondition);
+    repo.owner_wallet_address = publicKey?.toBytes() || new Uint8Array(32);
+    repo.reward_per_pull_request = BigInt(
+      formData.bountyPrice * LAMPORTS_PER_SOL
+    );
+
+    const response = await smartContractService.createRepository(repo);
+
+    if (response) {
+      confetti({
+        particleCount: 150,
+        spread: 60,
+      });
+
+      toast.success("Bounty created successfully", {
+        icon: "🎉",
+        style: {
+          backgroundColor: "#000",
+          borderBlockStyle: "solid",
+          color: "#fff",
+          border: "2px solid #FFFFFF40",
+        },
+      });
+
+      // setTimeout(() => {
+      //   router.push("/dashboard");
+      // }, 500);
+    } else {
+      toast.error(`someting wrong`, {
+        icon: "😥",
+        style: {
+          backgroundColor: "#000",
+          borderBlockStyle: "solid",
+          color: "#fff",
+          border: "2px solid #FFFFFF40",
+        },
+      });
+    }
   };
 
   // Framer Motion animasyon ayarları
