@@ -37,7 +37,7 @@
     "framer-motion": "^11.5.4",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.439.0",
-    "next": "14.2.8",
+    "next": "14.2.14",
     "pino-pretty": "^7.0.0",
     "react": "^18",
     "react-apexcharts": "^1.4.1",
