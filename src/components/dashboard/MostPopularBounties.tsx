@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -6,94 +7,146 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue,
+  Button,
 } from "@nextui-org/react";
-
-const rows = [
-  {
-    key: "1",
-    name: "Tony Reichert",
-    role: "CEO",
-    status: "Active",
-  },
-  {
-    key: "2",
-    name: "Zoey Lang",
-    role: "Technical Lead",
-    status: "Paused",
-  },
-  {
-    key: "3",
-    name: "Jane Fisher",
-    role: "Senior Developer",
-    status: "Active",
-  },
-  {
-    key: "4",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  },
-  {
-    key: "5",
-    name: "Tony Reichert",
-    role: "CEO",
-    status: "Active",
-  },
-  {
-    key: "6",
-    name: "Zoey Lang",
-    role: "Technical Lead",
-    status: "Paused",
-  },
-  {
-    key: "7",
-    name: "Jane Fisher",
-    role: "Senior Developer",
-    status: "Active",
-  },
-  {
-    key: "8",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  },
-];
-
-const columns = [
-  {
-    key: "name",
-    label: "NAME",
-  },
-  {
-    key: "owner",
-    label: "OWNER",
-  },
-  {
-    key: "Bounty",
-    label: "BOUNTY",
-  },
-  {
-    key: "url",
-    label: "URL",
-  },
-];
+import { SquareArrowOutUpRight } from "lucide-react";
+import { GithubRepo } from "@/Schema/Repository";
+import { repoSchemaToModel } from "@/services/utils";
+import { SmartContractService } from "@/services/SmartContractService";
+import { useRouter } from "next/navigation";
 
 export default function MostPopularBounties() {
+  const [repos, setRepos] = useState<GithubRepo[] | null>();
+  const smartContractService = new SmartContractService();
+  const router = useRouter();
+  useEffect(() => {
+    async function getRepos() {
+      const repos = await smartContractService.getAllRepositories();
+      setRepos(repos);
+    }
+
+    getRepos();
+  }, []);
+
+  const columns = [
+    {
+      key: "repo_name",
+      label: "Repo Name",
+    },
+    {
+      key: "pull_request_limit",
+      label: "Min PR for Reward",
+    },
+    {
+      key: "reward_per_pull_request",
+      label: "Reward Amount",
+    },
+    {
+      key: "repo_url",
+      label: "REPO URL",
+    },
+    {
+      key: "id",
+      label: "View Details",
+    },
+  ];
+
+  const renderCell = React.useCallback(
+    (repos: GithubRepo, columnKey: React.Key) => {
+      const repoModel = repoSchemaToModel(repos);
+
+      const cellValue = repoModel[columnKey as keyof typeof repoModel];
+
+      console.log("cellValue", cellValue);
+
+      switch (columnKey) {
+        case "pull_request_limit":
+          return (
+            <div className="flex justify-center gap-2">
+              <span> {cellValue} RR / </span>
+              <span className="opacity-25"> reward</span>
+            </div>
+          );
+        case "repo_description":
+          return <span>{cellValue.toString()}</span>;
+        case "reward_per_pull_request":
+          return (
+            <div className="flex justify-center gap-2">
+              <span> {cellValue}</span>
+              <span className="opacity-25"> SOL</span>
+            </div>
+          );
+        case "repo_url":
+          return (
+            <Button
+              size="sm"
+              radius="lg"
+              color="success"
+              variant="ghost"
+              isIconOnly
+              className="opacity-50"
+              onClick={() => {
+                router.push(cellValue.toString());
+              }}
+            >
+              <SquareArrowOutUpRight size={12} />
+            </Button>
+            // <Link href={cellValue.toString()} target="blank">
+            // </Link>
+          );
+        case "id":
+          return (
+            <Button
+              size="sm"
+              radius="lg"
+              color="primary"
+              variant="shadow"
+              onClick={() => {
+                router.push(`/bounty/${cellValue}`);
+              }}
+            >
+              Detail
+            </Button>
+          );
+        default:
+          return <span>{cellValue}</span>;
+      }
+    },
+    []
+  );
+
   return (
-    <Table aria-label="Example table with dynamic content">
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={rows}>
-        {(item) => (
-          <TableRow key={item.key}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+    <div className="flex flex-col items-center w-full min-h-screen">
+      <Table aria-label="Example empty table">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn
+              key={column.key}
+              align={
+                column.key === "reward_per_pull_request" ||
+                column.key === "repo_url"
+                  ? "center"
+                  : "start"
+              }
+            >
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        {repos != null ? (
+          <TableBody items={repos}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
             )}
-          </TableRow>
+          </TableBody>
+        ) : (
+          <TableBody emptyContent={"There is no data yet"}>{[]}</TableBody>
         )}
-      </TableBody>
-    </Table>
+      </Table>
+    </div>
   );
 }
