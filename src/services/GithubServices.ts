@@ -10,7 +10,7 @@ export class GitGubServices {
 
 
         const returnRepo: GithubRepo = new GithubRepo();
-        returnRepo.id = data.id.toString();
+        returnRepo.id = String(data.id);
         returnRepo.repo_url = data.html_url;
         returnRepo.repo_name = data.name;
         returnRepo.repo_description = data.description || " ";
@@ -22,6 +22,7 @@ export class GitGubServices {
 
 
         return returnRepo;
-
     }
-}
+
+    async getRepoDetailedInfo(username: string, repoUrl: string): Promise<string> {
+    }
