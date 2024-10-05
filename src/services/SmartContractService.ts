@@ -3,7 +3,7 @@ import { UserResponse } from "@/Schema/models/User/UserResponse";
 import { GithubRepo, GithubRepoShema } from "@/Schema/Repository";
 import { User, UserShema } from "@/Schema/User";
 import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
-import { clusterApiUrl, Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { deserialize, serialize } from "borsh";
 import toast from "react-hot-toast";
 import { Md5 } from "ts-md5";
@@ -29,7 +29,7 @@ export class SmartContractService {
 
             const encoded = serialize(UserForCreateShema, userCreate);
             const concat = Uint8Array.of(2, ...encoded);
-            
+
             const userPDA = PublicKey.findProgramAddressSync([Buffer.from("user_pda"), Buffer.from(pubkey)], this.programId);
 
 
@@ -63,7 +63,6 @@ export class SmartContractService {
         }
     }
 
-
     // Kullanıcının var olup olmadığını kontrol eder
     async getUser(publickey: Uint8Array): Promise<UserResponse> {
 
@@ -89,13 +88,15 @@ export class SmartContractService {
 
 
             const repoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(repo.id)], this.programId);
+            const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(repo.id)], this.programId);
 
             const instruction = new TransactionInstruction({
                 keys: [
                     { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
                     { pubkey: repoPDA[0], isSigner: false, isWritable: true },
-                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-
+                    { pubkey: repoWalletPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }, // System Program
+                    { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }, // Rent
                 ],
                 data: Buffer.from(concat),
                 programId: this.programId
@@ -145,6 +146,41 @@ export class SmartContractService {
             return false;
         }
 
+    }
+
+    async getAllRepositories(): Promise<GithubRepo[]> {
+        const accounts = await this.connection.getProgramAccounts(this.programId);
+
+        const githubRepos: GithubRepo[] = [];
+
+        for (let account of accounts) {
+            // Repo PDA adresini ve veriyi kontrol etmek için deserialize et
+            try {
+                const repoData = deserialize(
+                    GithubRepoShema,
+                    GithubRepo,
+                    account.account.data
+                );
+
+                githubRepos.push(repoData);
+            } catch (err) {
+
+            }
+        }
+
+        console.log("All repos:", githubRepos);
+        return githubRepos;
+    }
+
+    async getRepository(id: string): Promise<GithubRepo | null> {
+        const publicKey = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(id)], this.programId);
+        const repo_read = await this.connection.getAccountInfo(publicKey[0]);
+
+        if (repo_read == null) {
+            return null;
+        }
+        const repo_deserialized = deserialize(GithubRepoShema, GithubRepo, repo_read.data);
+        return repo_deserialized;
     }
 
 }

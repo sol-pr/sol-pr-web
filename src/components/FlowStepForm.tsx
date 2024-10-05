@@ -62,6 +62,7 @@ export default function FlowStepForm() {
       repo.reward_per_pull_request = BigInt(
         formData.bountyPrice * LAMPORTS_PER_SOL
       );
+      repo.repo_wallet_address = new Uint8Array(32);
 
       const response = await smartContractService.createRepository(repo);
 
@@ -82,7 +83,7 @@ export default function FlowStepForm() {
         });
 
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/bounty");
         }, 500);
       } else {
         toast.error(`someting wrong`, {

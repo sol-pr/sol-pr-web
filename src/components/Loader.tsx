@@ -30,7 +30,6 @@ function Loader({ children }: { children: React.ReactNode }) {
       initial={{ opacity: 0, y: -50 }} // Başlangıç durumu
       animate={{ opacity: 1, y: 0 }} // Animasyon son durumu
       transition={{ duration: 0.5 }} // Geçiş süresi (0.5 saniye)
-      className="overflow-hidden"
     >
       {children}
     </motion.div>

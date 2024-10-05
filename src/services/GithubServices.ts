@@ -1,13 +1,6 @@
 import { GithubRepo } from "@/Schema/Repository";
 
 export class GitGubServices {
-    async getRepos() {
-        const response = await fetch('https://api.github.com/users/bgraokmush/repos');
-        console.log(response);
-        return response.json();
-
-    }
-
     async getRepoDetails(username: string, repoUrl: string): Promise<GithubRepo> {
         const repoName = repoUrl.split('/').pop();
         console.log(`https://api.github.com/repos/${username}/${repoName}`);
@@ -25,6 +18,7 @@ export class GitGubServices {
         returnRepo.pull_request_limit = BigInt(0);
         returnRepo.reward_per_pull_request = BigInt(0);
         returnRepo.total_pull_requests = BigInt(0);
+        returnRepo.repo_wallet_address = new Uint8Array(32);
 
 
         return returnRepo;
