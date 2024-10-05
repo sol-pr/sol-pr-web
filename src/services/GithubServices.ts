@@ -23,6 +23,4 @@ export class GitGubServices {
 
         return returnRepo;
     }
-
-    async getRepoDetailedInfo(username: string, repoUrl: string): Promise<string> {
-    }
+}
