@@ -4,8 +4,12 @@ import { Card, CardBody } from "@nextui-org/card";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Title } from "./Title";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { publicDecrypt } from "crypto";
+import { SmartContractService } from "@/services/SmartContractService";
 
 interface Props {
   repo: RepositoryModel;
@@ -13,6 +17,17 @@ interface Props {
 
 const RepositoryDetail = ({ repo }: Props) => {
   const router = useRouter();
+  const { publicKey } = useWallet();
+  const [repoBalance, setRepoBalance] = useState<number>();
+  const smartContractService = new SmartContractService();
+  useEffect(() => {
+    const getRepoBalance = async () => {
+      const balance = await smartContractService.getRepoBalace(repo.id);
+      await setRepoBalance(balance);
+    };
+    getRepoBalance();
+  }, []);
+
   return (
     <div className="md:w-3/4">
       {repo === undefined ? (
@@ -43,7 +58,7 @@ const RepositoryDetail = ({ repo }: Props) => {
                   <p className="font-mono">
                     created by:{" "}
                     <span className="text-primary-500 hover:text-primary-300">
-                      {repo.owner_wallet_address.slice(0, 8)}...
+                      {repo.owner_wallet_address}
                     </span>{" "}
                   </p>
                 </CardBody>
@@ -51,7 +66,7 @@ const RepositoryDetail = ({ repo }: Props) => {
             </div>
 
             <div className="md:w-3/4">
-              <div className="flex flex-col md:flex md:flex-row gap-4 ">
+              <div className="flex flex-col md:flex md:flex-row wrap gap-4 ">
                 {" "}
                 <Card className="md:w-1/4 bg-transparent mt-4 md:mt-0 border-2 border-slate-400/10">
                   <CardBody className="flex items-center justify-center p-10 gap-4">
@@ -100,6 +115,24 @@ const RepositoryDetail = ({ repo }: Props) => {
                   </CardBody>
                 </Card>
               </div>
+              {repo.owner_wallet_address === publicKey?.toString() ? (
+                <Card className="border-2 bg-transparent border-slate-400/10 mt-4">
+                  <CardBody className="p-10 flex">
+                    <p>Repo Balance : {repoBalance} SOL</p>
+                    <Button
+                      onClick={() =>
+                        smartContractService.loadBountyRepo(
+                          repo.id,
+                          publicKey,
+                          0.5
+                        )
+                      }
+                    >
+                      Add SOL
+                    </Button>
+                  </CardBody>
+                </Card>
+              ) : null}
             </div>
           </div>
         </>

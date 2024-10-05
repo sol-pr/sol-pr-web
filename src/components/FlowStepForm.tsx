@@ -53,7 +53,7 @@ export default function FlowStepForm() {
     if (connected && publicKey) {
       const user = await smartContractService.getUser(publicKey?.toBytes());
       const repo = await gitGubServices.getRepoDetails(
-        user.user?.github_username || " ",
+        "bgraokmush", //user.user?.github_username || " ",
         formData.githubRepoUrl
       );
 

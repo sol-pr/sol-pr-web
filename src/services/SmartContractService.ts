@@ -3,7 +3,7 @@ import { UserResponse } from "@/Schema/models/User/UserResponse";
 import { GithubRepo, GithubRepoShema } from "@/Schema/Repository";
 import { User, UserShema } from "@/Schema/User";
 import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
-import { clusterApiUrl, Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SendTransactionError, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction, TransactionMessage, VersionedTransaction, Transaction, sendAndConfirmTransaction, } from "@solana/web3.js";
 import { deserialize, serialize } from "borsh";
 import toast from "react-hot-toast";
 import { Md5 } from "ts-md5";
@@ -180,7 +180,63 @@ export class SmartContractService {
             return null;
         }
         const repo_deserialized = deserialize(GithubRepoShema, GithubRepo, repo_read.data);
+
+        const pubkey = new PublicKey(repo_deserialized.owner_wallet_address);
+        console.log("CurrentRepo->", pubkey.toBase58());
         return repo_deserialized;
     }
 
+    async getRepoBalace(id: string): Promise<number> {
+        // 1. GitHub repo PDA'sını oluştur
+        const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+
+
+        const wallet = new PublicKey(githubRepoPDA[0]);
+        const balanceLamports = await this.connection.getBalance(wallet);
+
+        // 2. Bakiyeyi SOL cinsine çevir (1 SOL = 1,000,000,000 lamports)
+        return balanceLamports / LAMPORTS_PER_SOL;
+    }
+
+    async loadBountyRepo(id: string, phantomWallet: PublicKey, amount: number) {
+        try {
+
+            const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+
+            const instruction = SystemProgram.transfer({
+                fromPubkey: phantomWallet,
+                toPubkey: githubRepoPDA[0],
+                lamports: amount * LAMPORTS_PER_SOL,
+            });
+
+
+
+            const latestBlockhash = await this.connection.getLatestBlockhash();
+
+            const message = new TransactionMessage({
+                instructions: [instruction],
+                payerKey: phantomWallet,
+                recentBlockhash: latestBlockhash.blockhash
+            }).compileToLegacyMessage()
+
+            const transaction = new VersionedTransaction(message);
+
+            const signedTransaction = await window.solana.signTransaction(transaction);
+
+
+            const txSignature = await this.connection.sendRawTransaction(signedTransaction.serialize());
+
+            toast.success("Bounty loaded successfully");
+            toast.success(txSignature);
+
+
+        } catch (error) {
+            console.error("Error loading bounty:", error);
+            toast.error("Error loading bounty");
+        }
+
+
+
+
+    }
 }

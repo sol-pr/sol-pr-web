@@ -7,4 +7,5 @@ export interface RepositoryModel {
     pull_request_limit: number;
     reward_per_pull_request: number;
     owner_wallet_address: string;
+    repo_wallet_address: string;
 }
