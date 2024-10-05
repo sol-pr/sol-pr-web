@@ -124,7 +124,7 @@ const RepositoryDetail = ({ repo }: Props) => {
                         smartContractService.loadBountyRepo(
                           repo.id,
                           publicKey,
-                          0.5
+                          0.3
                         )
                       }
                     >

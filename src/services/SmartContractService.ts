@@ -1,5 +1,6 @@
 
 import { UserResponse } from "@/Schema/models/User/UserResponse";
+import { PrCountAccess, PrCountAccessShema } from "@/Schema/PrCountAccess";
 import { GithubRepo, GithubRepoShema } from "@/Schema/Repository";
 import { User, UserShema } from "@/Schema/User";
 import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
@@ -21,7 +22,9 @@ export class SmartContractService {
         this.programId = new PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID || "");
     }
 
-
+    async sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
     // checkUser eğer false dönerse bu metod tetiklenecek
     async createUser(github_username: string, pubkey: Uint8Array): Promise<boolean> {
         try {
@@ -62,7 +65,6 @@ export class SmartContractService {
             return false;
         }
     }
-
     // Kullanıcının var olup olmadığını kontrol eder
     async getUser(publickey: Uint8Array): Promise<UserResponse> {
 
@@ -79,7 +81,6 @@ export class SmartContractService {
         return { isSuccessful: true, message: "user successfuly get.", user: user_deserialized };
 
     }
-
     async createRepository(repo: GithubRepo): Promise<boolean> {
 
         try {
@@ -147,7 +148,6 @@ export class SmartContractService {
         }
 
     }
-
     async getAllRepositories(): Promise<GithubRepo[]> {
         const accounts = await this.connection.getProgramAccounts(this.programId);
 
@@ -171,7 +171,6 @@ export class SmartContractService {
         console.log("All repos:", githubRepos);
         return githubRepos;
     }
-
     async getRepository(id: string): Promise<GithubRepo | null> {
         const publicKey = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(id)], this.programId);
         const repo_read = await this.connection.getAccountInfo(publicKey[0]);
@@ -185,7 +184,6 @@ export class SmartContractService {
         console.log("CurrentRepo->", pubkey.toBase58());
         return repo_deserialized;
     }
-
     async getRepoBalace(id: string): Promise<number> {
         // 1. GitHub repo PDA'sını oluştur
         const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
@@ -197,7 +195,6 @@ export class SmartContractService {
         // 2. Bakiyeyi SOL cinsine çevir (1 SOL = 1,000,000,000 lamports)
         return balanceLamports / LAMPORTS_PER_SOL;
     }
-
     async loadBountyRepo(id: string, phantomWallet: PublicKey, amount: number) {
         try {
 
@@ -234,9 +231,153 @@ export class SmartContractService {
             console.error("Error loading bounty:", error);
             toast.error("Error loading bounty");
         }
+    }
+    async increasePullRequestCount(user: PublicKey,
+        githubRepoId: string) {
+
+        const prCounterPDA = PublicKey.findProgramAddressSync(
+            [
+                Buffer.from("pull request counter"),
+                Buffer.from(user.toBytes()),
+                Buffer.from(githubRepoId)
+            ],
+            this.programId
+        );
+
+        const prCounterAccount = await this.connection.getAccountInfo(prCounterPDA[0]);
+        if (prCounterAccount == null) {
+            // create new account
+            const prCountAccess = new PrCountAccess();
+            prCountAccess.id = githubRepoId;
+            prCountAccess.phantom_wallet = user.toBytes();
+
+            //for create new account
+            const encoded = serialize(PrCountAccessShema, prCountAccess);
+            const concat = Uint8Array.of(0, ...encoded);
+
+            const instruction = new TransactionInstruction({
+                keys: [
+                    { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: prCounterPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+
+                ],
+                data: Buffer.from(concat),
+                programId: this.programId
+            });
+
+            const message = new TransactionMessage({
+                instructions: [instruction],
+                payerKey: this.payer.publicKey,
+                recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash
+            }).compileToV0Message();
 
 
+            const tx = new VersionedTransaction(message);
+            tx.sign([this.payer]);
 
+            this.connection.sendTransaction(tx);
+            console.log("New users account => " + prCounterPDA[0])
+
+            return true;
+        }
+        else {
+            const prCountAccess = new PrCountAccess();
+            prCountAccess.id = githubRepoId;
+            prCountAccess.phantom_wallet = user.toBytes();
+
+            //for create new account
+            const encoded = serialize(PrCountAccessShema, prCountAccess);
+            const concat = Uint8Array.of(1, ...encoded);
+
+            const instruction = new TransactionInstruction({
+                keys: [
+                    { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: prCounterPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+
+                ],
+                data: Buffer.from(concat),
+                programId: this.programId
+            });
+
+            const message = new TransactionMessage({
+                instructions: [instruction],
+                payerKey: this.payer.publicKey,
+                recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash
+            }).compileToV0Message();
+
+
+            const tx = new VersionedTransaction(message);
+            tx.sign([this.payer]);
+
+            this.connection.sendTransaction(tx);
+            console.log("UpdatesUser => " + prCounterPDA[0])
+
+            return true;
+
+        }
+    }
+
+    async transferReward(id: string,
+        phantomWallet: PublicKey) {
+
+        try {
+
+            const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(id)], this.programId);
+
+            // 2. User için PDA oluştur
+            const userPDA = PublicKey.findProgramAddressSync(
+                [Buffer.from("user_pda"), Buffer.from(phantomWallet.toBytes())],
+                this.programId
+            );
+
+            // 3. Kullanıcının PR sayacı için PDA oluştur
+            const prCounterPDA = PublicKey.findProgramAddressSync(
+                [
+                    Buffer.from("pull request counter"),
+                    Buffer.from(phantomWallet.toBytes()),
+                    Buffer.from(id)
+                ],
+                this.programId
+            );
+
+            const instruction = new TransactionInstruction({
+                keys: [
+                    { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: githubRepoPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: userPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: prCounterPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
+                ],
+                data: Buffer.from([7]),
+                programId: this.programId // Rust program ID'si
+            });
+
+
+            // 5. TransactionMessage oluştur
+            const latestBlockhash = await this.connection.getLatestBlockhash(); // Blok hash alınması
+            const message = new TransactionMessage({
+                instructions: [instruction],
+                payerKey: this.payer.publicKey,
+                recentBlockhash: latestBlockhash.blockhash
+            }).compileToV0Message();
+
+            // 6. VersionedTransaction oluştur ve imzala
+            const transaction = new VersionedTransaction(message);
+            transaction.sign([this.payer]); // Payer işlemi imzalıyor
+
+            // 7. Transaction'ı gönder
+            const txSignature = await this.connection.sendTransaction(transaction);
+
+            console.log("Transfer işlemi başarılı. TX Signature:", txSignature);
+            toast.success("Reward transferred successfully");
+        } catch (error) {
+            console.error("Error loading bounty:", error);
+            toast.error("Error loading bounty");
+        }
 
     }
+
+
 }

@@ -53,7 +53,7 @@ export default function FlowStepForm() {
     if (connected && publicKey) {
       const user = await smartContractService.getUser(publicKey?.toBytes());
       const repo = await gitGubServices.getRepoDetails(
-        "bgraokmush", //user.user?.github_username || " ",
+        user.user?.github_username || " ",
         formData.githubRepoUrl
       );
 
@@ -83,8 +83,8 @@ export default function FlowStepForm() {
         });
 
         setTimeout(() => {
-          router.push("/bounty");
-        }, 500);
+          router.replace("/bounty");
+        }, 2000);
       } else {
         toast.error(`someting wrong`, {
           icon: "😥",
