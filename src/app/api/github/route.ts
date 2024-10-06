@@ -1,15 +1,15 @@
 import { SmartContractService } from "@/services/SmartContractService";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { NextResponse } from "next/server";
 import { unescape } from "querystring";
+import { cookies } from 'next/headers'
 
-
-const { publicKey } = useWallet();
 const smartContractService = new SmartContractService();
 
 export async function POST(req: Request) {
     const event = req.headers.get('x-github-event');
-
+    const publicKey = new PublicKey(localStorage.getItem("publicKey") || "");
     // Sadece 'push' eventlerini işliyoruz
     if (event !== 'push') {
         return NextResponse.json({ message: 'Not a push event' }, { status: 400 });
@@ -48,4 +48,11 @@ export async function POST(req: Request) {
 
     // Başarılı yanıt dönüyoruz
     return NextResponse.json({ message: 'Webhook processed', webhookPayload }, { status: 200 });
+}
+
+
+export async function GET(req: Request) {
+    const cookieStore = cookies()
+    const cookiePublicKey = cookieStore.get('publicKey')
+    return NextResponse.json({ message: 'Bugra', pubkey: cookiePublicKey });
 }

@@ -26,21 +26,32 @@ import { BellRing, Github } from "lucide-react";
 import { Register } from "@/Schema/models/Register";
 import { useRouter, usePathname } from "next/navigation";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 const AppNavbar = () => {
   const router = useRouter();
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey, disconnect } = useWallet(); // disconnect ekledik
   const smartContract = new SmartContractService();
   const pathname = usePathname();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const menuItems = ["Bounty", "New Repo", "Account"];
-  const menuLinks = ["/bounty", "/new-repo", "/my-account"];
+  const menuLinks = ["bounty", "new-repo", "my-account"];
 
   const [formData, setFormData] = useState<Register>({
     githubUsername: "",
   });
+
+  // Cache'e kaydetme işlemi
+  const savePublicKeyToCache = (publicKey: string) => {
+    Cookies.set("publicKey", publicKey, { expires: 7 }); // 7 gün süreyle saklar
+  };
+
+  // Cache'den silme işlemi
+  const clearPublicKeyFromCache = () => {
+    Cookies.remove("publicKey");
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,6 +98,9 @@ const AppNavbar = () => {
 
   const handleWalletConnected = useCallback(async () => {
     if (connected && publicKey) {
+      const publicKeyString = publicKey.toBase58();
+      savePublicKeyToCache(publicKeyString); // Cache'e publicKey kaydediyoruz
+
       const hasUser = await smartContract.getUser(publicKey.toBytes());
       if (!hasUser.isSuccessful) {
         onOpen();
@@ -107,9 +121,26 @@ const AppNavbar = () => {
     }
   }, [connected, publicKey]);
 
+  const handleWalletDisconnected = useCallback(() => {
+    if (!connected) {
+      clearPublicKeyFromCache(); // Cache'den publicKey'i siliyoruz
+      toast("Disconnected!", {
+        icon: "⚡",
+        style: {
+          backgroundColor: "#000",
+          borderBlockStyle: "solid",
+          color: "#fff",
+          border: "2px solid #FFFFFF40",
+        },
+      });
+      router.push("/"); // Logout sonrası ana sayfaya yönlendirme
+    }
+  }, [connected]);
+
   useEffect(() => {
     handleWalletConnected();
-  }, [connected, handleWalletConnected]);
+    handleWalletDisconnected();
+  }, [connected, handleWalletConnected, handleWalletDisconnected]);
 
   const WalletMultiButtonDynamic = dynamic(
     async () =>
