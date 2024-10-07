@@ -72,8 +72,6 @@ export default function MyTable() {
 
       const cellValue = repoModel[columnKey as keyof typeof repoModel];
 
-      console.log("cellValue", cellValue);
-
       switch (columnKey) {
         case "pull_request_limit":
           return (
@@ -166,7 +164,7 @@ export default function MyTable() {
           <TableBody emptyContent={"There is no data yet"}>{[]}</TableBody>
         )}
       </Table>
-      <Pagination showControls total={3} initialPage={1} />
+      <Pagination showControls total={2} initialPage={1} />
     </div>
   );
 }

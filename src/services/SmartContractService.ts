@@ -87,7 +87,6 @@ export class SmartContractService {
             const encoded = serialize(GithubRepoShema, repo);
             const concat = Uint8Array.of(4, ...encoded);
 
-
             const repoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(repo.id)], this.programId);
             const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(repo.id)], this.programId);
 
@@ -108,7 +107,6 @@ export class SmartContractService {
                 payerKey: this.payer.publicKey,
                 recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash
             }).compileToV0Message();
-
 
             const tx = new VersionedTransaction(message);
             tx.sign([this.payer]);
@@ -164,7 +162,7 @@ export class SmartContractService {
 
                 githubRepos.push(repoData);
             } catch (err) {
-
+                console.error("Error deserializing account data:", err);
             }
         }
 
@@ -195,7 +193,7 @@ export class SmartContractService {
         // 2. Bakiyeyi SOL cinsine çevir (1 SOL = 1,000,000,000 lamports)
         return balanceLamports / LAMPORTS_PER_SOL;
     }
-    async loadBountyRepo(id: string, phantomWallet: PublicKey, amount: number) {
+    async loadBountyRepo(id: string, phantomWallet: PublicKey, sendTransaction: any, amount: number) {
         try {
 
             const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
@@ -218,13 +216,10 @@ export class SmartContractService {
 
             const transaction = new VersionedTransaction(message);
 
-            const signedTransaction = await window.solana.signTransaction(transaction);
-
-
-            const txSignature = await this.connection.sendRawTransaction(signedTransaction.serialize());
+            const signature = await sendTransaction(transaction, this.connection);
 
             toast.success("Bounty loaded successfully");
-            toast.success(txSignature);
+            toast.success(signature);
 
 
         } catch (error) {

@@ -18,7 +18,7 @@ interface Props {
 
 const RepositoryDetail = ({ repo }: Props) => {
   const router = useRouter();
-  const { publicKey } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
   const [repoBalance, setRepoBalance] = useState<number>();
   const [inputValue, setInputValue] = useState("");
   const smartContractService = new SmartContractService();
@@ -104,6 +104,7 @@ const RepositoryDetail = ({ repo }: Props) => {
                               .loadBountyRepo(
                                 repo.id,
                                 publicKey,
+                                sendTransaction,
                                 parseFloat(inputValue)
                               )
                               .then(() => window.location.reload())
