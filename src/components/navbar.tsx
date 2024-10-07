@@ -37,7 +37,7 @@ const AppNavbar = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const menuItems = ["Bounty", "New Repo", "Account"];
-  const menuLinks = ["bounty", "new-repo", "my-account"];
+  const menuLinks = ["/bounty", "/new-repo", "/my-account"];
 
   const [formData, setFormData] = useState<Register>({
     githubUsername: "",
@@ -124,16 +124,6 @@ const AppNavbar = () => {
   const handleWalletDisconnected = useCallback(() => {
     if (!connected) {
       clearPublicKeyFromCache(); // Cache'den publicKey'i siliyoruz
-      toast("Disconnected!", {
-        icon: "⚡",
-        style: {
-          backgroundColor: "#000",
-          borderBlockStyle: "solid",
-          color: "#fff",
-          border: "2px solid #FFFFFF40",
-        },
-      });
-      router.push("/"); // Logout sonrası ana sayfaya yönlendirme
     }
   }, [connected]);
 

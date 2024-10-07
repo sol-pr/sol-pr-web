@@ -100,11 +100,13 @@ const RepositoryDetail = ({ repo }: Props) => {
                         ></Input>
                         <Button
                           onClick={() =>
-                            smartContractService.loadBountyRepo(
-                              repo.id,
-                              publicKey,
-                              parseFloat(inputValue)
-                            )
+                            smartContractService
+                              .loadBountyRepo(
+                                repo.id,
+                                publicKey,
+                                parseFloat(inputValue)
+                              )
+                              .then(() => window.location.reload())
                           }
                           color="success"
                         >

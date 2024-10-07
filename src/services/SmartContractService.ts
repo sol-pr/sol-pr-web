@@ -326,13 +326,11 @@ export class SmartContractService {
 
             const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(id)], this.programId);
 
-            // 2. User için PDA oluştur
             const userPDA = PublicKey.findProgramAddressSync(
                 [Buffer.from("user_pda"), Buffer.from(phantomWallet.toBytes())],
                 this.programId
             );
 
-            // 3. Kullanıcının PR sayacı için PDA oluştur
             const prCounterPDA = PublicKey.findProgramAddressSync(
                 [
                     Buffer.from("pull request counter"),
@@ -342,32 +340,33 @@ export class SmartContractService {
                 this.programId
             );
 
+            const repoWalletPda = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+
             const instruction = new TransactionInstruction({
                 keys: [
                     { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
                     { pubkey: githubRepoPDA[0], isSigner: false, isWritable: true },
                     { pubkey: userPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: phantomWallet, isSigner: false, isWritable: true },
                     { pubkey: prCounterPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: repoWalletPda[0], isSigner: false, isWritable: true },
                     { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
                 ],
                 data: Buffer.from([7]),
-                programId: this.programId // Rust program ID'si
+                programId: this.programId
             });
 
-
-            // 5. TransactionMessage oluştur
-            const latestBlockhash = await this.connection.getLatestBlockhash(); // Blok hash alınması
+            const latestBlockhash = await this.connection.getLatestBlockhash();
             const message = new TransactionMessage({
                 instructions: [instruction],
                 payerKey: this.payer.publicKey,
                 recentBlockhash: latestBlockhash.blockhash
             }).compileToV0Message();
 
-            // 6. VersionedTransaction oluştur ve imzala
-            const transaction = new VersionedTransaction(message);
-            transaction.sign([this.payer]); // Payer işlemi imzalıyor
 
-            // 7. Transaction'ı gönder
+            const transaction = new VersionedTransaction(message);
+            transaction.sign([this.payer]);
+
             const txSignature = await this.connection.sendTransaction(transaction);
 
             console.log("Transfer işlemi başarılı. TX Signature:", txSignature);

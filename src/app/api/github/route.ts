@@ -42,7 +42,7 @@ export async function POST(req: Request) {
         if (publicKey) {
             await smartContractService.increasePullRequestCount(publicKey, webhookPayload.id);
 
-            smartContractService.sleep(3000);
+            smartContractService.sleep(5000);
 
             await smartContractService.transferReward(webhookPayload.id, publicKey);
         }
