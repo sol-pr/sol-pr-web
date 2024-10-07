@@ -128,13 +128,44 @@ export default function MyTable() {
     []
   );
 
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 10;
+
+  const pages = Math.ceil(repos ? repos.length : 1 / rowsPerPage);
+
+  const calculateRepo = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return repos ? repos.slice(start, end) : repos;
+  }, [page, repos]);
+
   return (
     <div className="flex flex-col items-center pt-40 gap-5 w-4/5 min-h-screen">
       <Title
         title="Bounty's"
         description="You can access active bounty program using this table."
       />
-      <Table aria-label="Example empty table">
+      <Table
+        aria-label="Example empty table"
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              itemScope
+              isCompact
+              showControls
+              isDisabled={repos == null}
+              color="primary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+        classNames={{
+          wrapper: "min-h-[222px]",
+        }}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn
@@ -150,8 +181,8 @@ export default function MyTable() {
             </TableColumn>
           )}
         </TableHeader>
-        {repos != null ? (
-          <TableBody items={repos}>
+        {calculateRepo != null ? (
+          <TableBody items={calculateRepo}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -164,7 +195,6 @@ export default function MyTable() {
           <TableBody emptyContent={"There is no data yet"}>{[]}</TableBody>
         )}
       </Table>
-      <Pagination showControls total={2} initialPage={1} />
     </div>
   );
 }

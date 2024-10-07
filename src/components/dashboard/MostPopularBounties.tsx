@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
   Button,
+  Pagination,
 } from "@nextui-org/react";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { GithubRepo } from "@/Schema/Repository";
@@ -115,9 +116,37 @@ export default function MostPopularBounties() {
     []
   );
 
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 5;
+
+  const pages = Math.ceil(repos ? repos.length : 1 / rowsPerPage);
+
+  const calculateRepo = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return repos ? repos.slice(start, end) : repos;
+  }, [page, repos]);
+
   return (
     <div className="flex flex-col items-center w-full min-h-screen">
-      <Table aria-label="Example empty table">
+      <Table
+        aria-label="Example empty table"
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              color="primary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+        classNames={{
+          wrapper: "min-h-[222px]",
+        }}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn
@@ -133,8 +162,8 @@ export default function MostPopularBounties() {
             </TableColumn>
           )}
         </TableHeader>
-        {repos != null ? (
-          <TableBody items={repos}>
+        {calculateRepo != null ? (
+          <TableBody items={calculateRepo}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
