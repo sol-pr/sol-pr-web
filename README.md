@@ -105,7 +105,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## ✉️ Contact
 
-X Profile - [@bgraokmsuh](https://x.com/bgraokmush)
+X Profile - [@Sol-PullReward](https://x.com/sol_pr_global)
 
 Project Link: [https://github.com/sol-pr/sol-pr-web](https://github.com/sol-pr/sol-pr-web)
 
