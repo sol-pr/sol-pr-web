@@ -63,6 +63,21 @@ const AppNavbar = () => {
 
   const handleResigter = async () => {
     if (connected && publicKey) {
+      const user = await smartContract.getUser(publicKey.toBytes());
+
+      if (user.isSuccessful) {
+        toast.error(`You already registered!`, {
+          icon: "😥",
+          style: {
+            backgroundColor: "#000",
+            borderBlockStyle: "solid",
+            color: "#fff",
+            border: "2px solid #FFFFFF40",
+          },
+        });
+        router.push("/");
+      }
+
       const response = await smartContract.createUser(
         formData.githubUsername,
         publicKey.toBytes()

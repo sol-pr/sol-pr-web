@@ -81,6 +81,28 @@ export class SmartContractService {
         return { isSuccessful: true, message: "user successfuly get.", user: user_deserialized };
 
     }
+
+    async checkUser(github_username: String): Promise<boolean> {
+        const accounts = await this.connection.getProgramAccounts(this.programId);
+
+        const users: User[] = [];
+
+        for (let account of accounts) {
+            // User PDA adresini ve veriyi kontrol etmek için deserialize et
+            const userData = deserialize(
+                UserShema,
+                User,
+                account.account.data
+            );
+            users.push(userData);
+        }
+
+        if (users.find((user) => user.github_username === github_username) != null) {
+            return true;
+        }
+        return false;
+
+    }
     async createRepository(repo: GithubRepo): Promise<boolean> {
 
         try {
