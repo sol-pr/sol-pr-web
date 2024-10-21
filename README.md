@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div id="top"></div>
 
-## Getting Started
+<br />
+<div align="center">
+  <h3 align="center">Sol-PR Web Application</h3>
 
-First, run the development server:
+  <p align="center">
+    🚀 An application built with Next.js to facilitate bounty rewards for GitHub pull request approvals on Solana.
+    <br />
+    <a href="https://github.com/sol-pr/sol-pr-web/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/sol-pr/sol-pr-web/issues">Request Feature</a>
+  </p>
+</div>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📌 About The Project
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sol-PR is a web application that allows developers to earn bounties in Sol tokens by contributing to open-source projects. It is built using Next.js and leverages the Solana blockchain for secure and transparent transactions. Repo owners can attract new contributors while developers get rewarded for both feature additions and bug fixes.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Visit the live demo: [Sol-PR Web](https://sol-pr-web.vercel.app/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-## Learn More
+### 🛠 Built With
 
-To learn more about Next.js, take a look at the following resources:
+* [Next.js](https://nextjs.org/)
+* [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/)
+* [Tailwind CSS](https://tailwindcss.com/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+To get a local copy up and running, follow these steps.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* Ensure you have Node.js and npm installed on your machine.
+* Install the required dependencies as listed in the `package.json` file.
+
+### Installation
+
+1. Clone the repo:
+   ```sh
+   git clone https://github.com/sol-pr/sol-pr-web.git
+   ```
+2. Navigate to the project directory:
+   ```sh
+   cd sol-pr-web
+   ```
+3. Install the dependencies:
+   ```sh
+   npm install
+   ```
+4. Run the development server:
+   ```sh
+   npm run dev
+   ```
+
+You can now access the application on `http://localhost:3000` and interact with the Solana blockchain through the integrated wallet adapters.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## 📊 Usage
+
+The Sol-PR application allows developers to submit pull requests to open-source projects and receive bounties in Sol tokens once their contributions are approved. Repo owners can manage the rewards, track contributions, and encourage open-source collaboration.
+
+_For detailed examples, please refer to the [Documentation](https://github.com/sol-pr/sol-pr-web)_.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## 🛣 Roadmap
+
+- [x] Initial setup with Next.js and Solana integration
+- [x] Wallet adapter and transaction support
+- [x] Entegrate login via google with Tiplink
+- [x] Create bounty for own repository  
+- [ ] Become multi-chain with Wormhole
+- [ ] Create token and become DAO
+
+
+  -> See the [open issues](https://github.com/sol-pr/sol-pr-web/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## 💡 Contributing
+
+Contributions are what make the open-source community amazing! Feel free to make this project better by following these steps:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Any enhancements, bug fixes, or feature additions are greatly appreciated!
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## ✉️ Contact
+
+X Profile - [@Sol-PullReward](https://x.com/sol_pr_global)
+
+Project Link: [https://github.com/sol-pr/sol-pr-web](https://github.com/sol-pr/sol-pr-web)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## 🙏 Acknowledgments
+
+* [Next.js Documentation](https://nextjs.org/docs)
+* [Solana Web3.js Documentation](https://solana-labs.github.io/solana-web3.js/)
+* [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
