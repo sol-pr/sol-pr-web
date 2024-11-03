@@ -7,7 +7,22 @@ import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
 import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SendTransactionError, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction, TransactionMessage, VersionedTransaction, Transaction, sendAndConfirmTransaction, } from "@solana/web3.js";
 import { deserialize, serialize } from "borsh";
 import toast from "react-hot-toast";
-import { Md5 } from "ts-md5";
+
+import {
+    Wormhole,
+    routes,
+    wormhole,
+    Signer,
+    amount,
+    signSendWait
+} from '@wormhole-foundation/sdk';
+
+import evm from '@wormhole-foundation/sdk/evm';
+import solana from '@wormhole-foundation/sdk/solana';
+import { getSigner } from "./helpers";
+
+
+
 export class SmartContractService {
 
     connection: Connection;
@@ -15,11 +30,29 @@ export class SmartContractService {
     payer: Keypair;
     programId: PublicKey;
 
+
+    //for wormhole sdk
+    private wh!: Wormhole<"Devnet">;
+    private resolver!: ReturnType<Wormhole<"Devnet">['resolver']>;
+
     constructor() {
         this.connection = new Connection(clusterApiUrl("devnet"), "confirmed");
         this.privatekey = JSON.parse(process.env.NEXT_PUBLIC_PRIVATE_KEY || "[]");
         this.payer = Keypair.fromSecretKey(Uint8Array.from(this.privatekey));
         this.programId = new PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID || "");
+
+        this.initializeWormhole();
+    }
+
+    private async initializeWormhole() {
+        this.wh = await wormhole('Devnet', [evm, solana]);
+        this.resolver = this.wh.resolver([
+            routes.TokenBridgeRoute,
+            routes.AutomaticTokenBridgeRoute,
+            routes.CCTPRoute,
+            routes.AutomaticCCTPRoute,
+            routes.AutomaticPorticoRoute,
+        ]);
     }
 
     async sleep(ms: number): Promise<void> {
@@ -81,7 +114,6 @@ export class SmartContractService {
         return { isSuccessful: true, message: "user successfuly get.", user: user_deserialized };
 
     }
-
     async checkUser(github_username: String): Promise<boolean> {
         const accounts = await this.connection.getProgramAccounts(this.programId);
 
@@ -249,6 +281,69 @@ export class SmartContractService {
             toast.error("Error loading bounty");
         }
     }
+
+    async loadBountyRepoWormhole(id: string, phantomWallet: Keypair, transferAmount: number) {
+
+        try {
+
+            const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+
+            const sourceChain = this.wh.getChain('Ethereum');
+            const targetChain = this.wh.getChain('Solana');
+
+            const ethSigner = await getSigner(sourceChain, phantomWallet.secretKey.toString());
+            const solSigner = await getSigner(targetChain, phantomWallet.secretKey.toString());
+
+            const ethTokenBridge = await sourceChain.getTokenBridge();
+
+            const tokenId = Wormhole.tokenId(sourceChain.chain, 'native');
+            const lastAmount = amount.units(amount.parse(transferAmount.toString(), sourceChain.config.nativeTokenDecimals));
+
+
+            // Create transfer transaction
+            const transfer = ethTokenBridge.transfer(
+                ethSigner.address.address,
+                solSigner.address,
+                tokenId.address,
+                lastAmount
+            );
+
+            // Sign and send the transaction
+            const txids = await signSendWait(sourceChain, transfer, ethSigner.signer);
+            console.log('Sent: ', txids);
+
+            const [whm] = await sourceChain.parseTransaction(txids[txids.length - 1].txid);
+            console.log('Wormhole Messages: ', whm);
+
+            // Fetch the VAA
+            const vaa = await this.wh.getVaa(
+                whm,
+                'TokenBridge:Transfer',
+                60_000
+            );
+
+            const solTokenBridge = await targetChain.getTokenBridge();
+
+            // Redeem the transfer on Solana
+            const redeemTransfer = solTokenBridge.redeem(
+                solSigner.address.address,
+                vaa!
+            );
+
+            // Sign and send the redeem transaction
+            const redeemTxids = await signSendWait(targetChain, redeemTransfer, solSigner.signer);
+            console.log('Redeemed: ', redeemTxids);
+
+            toast.success("Bounty loaded successfully");
+
+
+        } catch (error) {
+            console.error("Error loading bounty:", error);
+            toast.error("Error loading bounty");
+        }
+
+    }
+
     async increasePullRequestCount(user: PublicKey,
         githubRepoId: string) {
 
@@ -335,7 +430,6 @@ export class SmartContractService {
 
         }
     }
-
     async transferReward(id: string,
         phantomWallet: PublicKey) {
 

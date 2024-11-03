@@ -6,11 +6,17 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Title } from "./Title";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "+";
 import { PublicKey } from "@solana/web3.js";
 import { publicDecrypt } from "crypto";
 import { SmartContractService } from "@/services/SmartContractService";
 import { Input } from "@nextui-org/input";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/dropdown";
 
 interface Props {
   repo: RepositoryModel;
@@ -98,7 +104,38 @@ const RepositoryDetail = ({ repo }: Props) => {
                           placeholder="◎ 1"
                           onChange={(e) => setInputValue(e.target.value)}
                         ></Input>
-                        <Button
+                        <Dropdown className="dark text-foreground purple-dark">
+                          <DropdownTrigger>
+                            <Button color="success" variant="shadow">
+                              Add
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu
+                            onAction={(key) => {
+                              if (key === "sol") {
+                                smartContractService
+                                  .loadBountyRepo(
+                                    repo.id,
+                                    publicKey,
+                                    sendTransaction,
+                                    parseFloat(inputValue)
+                                  )
+                                  .then(() => window.location.reload());
+                              } else if (key === "eth") {
+                                smartContractService.loadBountyRepoWormhole(
+                                  repo.id,
+                                  publicKey,
+                                  parseFloat(inputValue)
+                                );
+                              }
+                            }}
+                          >
+                            <DropdownItem key="sol">Add Sol</DropdownItem>
+                            <DropdownItem key="eth">Add Eth</DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+
+                        {/* <Button
                           onClick={() =>
                             smartContractService
                               .loadBountyRepo(
@@ -112,7 +149,7 @@ const RepositoryDetail = ({ repo }: Props) => {
                           color="success"
                         >
                           Add SOL
-                        </Button>
+                        </Button> */}
                       </div>
                     </CardBody>
                   </Card>
