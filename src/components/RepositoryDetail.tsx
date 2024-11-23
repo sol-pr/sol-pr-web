@@ -18,7 +18,8 @@ interface Props {
 
 const RepositoryDetail = ({ repo }: Props) => {
   const router = useRouter();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey } = useWallet();
+  const wallet = useWallet();
   const [repoBalance, setRepoBalance] = useState<number>();
   const [inputValue, setInputValue] = useState("");
   const smartContractService = new SmartContractService();
@@ -104,7 +105,7 @@ const RepositoryDetail = ({ repo }: Props) => {
                               .loadBountyRepo(
                                 repo.id,
                                 publicKey,
-                                sendTransaction,
+                                wallet,
                                 parseFloat(inputValue)
                               )
                               .then(() => window.location.reload())
@@ -114,6 +115,9 @@ const RepositoryDetail = ({ repo }: Props) => {
                           Add SOL
                         </Button>
                       </div>
+                      <p className="text-sm text-foreground-400">
+                        There is commission like 5% of your loading bounty
+                      </p>
                     </CardBody>
                   </Card>
                 ) : (

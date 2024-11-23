@@ -1,13 +1,14 @@
 
+import { LoadBounty, LoadBountyShema } from "@/Schema/LoadBounty";
 import { UserResponse } from "@/Schema/models/User/UserResponse";
 import { PrCountAccess, PrCountAccessShema } from "@/Schema/PrCountAccess";
 import { GithubRepo, GithubRepoShema } from "@/Schema/Repository";
 import { User, UserShema } from "@/Schema/User";
 import { UserForCreate, UserForCreateShema } from "@/Schema/UserForCreate";
+import { WalletContextState } from "@solana/wallet-adapter-react";
 import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SendTransactionError, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction, TransactionMessage, VersionedTransaction, Transaction, sendAndConfirmTransaction, } from "@solana/web3.js";
 import { deserialize, serialize } from "borsh";
 import toast from "react-hot-toast";
-import { Md5 } from "ts-md5";
 export class SmartContractService {
 
     connection: Connection;
@@ -107,7 +108,7 @@ export class SmartContractService {
 
         try {
             const encoded = serialize(GithubRepoShema, repo);
-            const concat = Uint8Array.of(4, ...encoded);
+            const concat = Uint8Array.of(3, ...encoded);
 
             const repoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(repo.id)], this.programId);
             const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(repo.id)], this.programId);
@@ -135,6 +136,7 @@ export class SmartContractService {
 
             const response = await this.connection.sendTransaction(tx).catch((error: SendTransactionError) => {
                 //const message = error.logs?.[2];
+                console.log("Error creating repository:", error);
                 const message = "Repository already exists";
                 toast.error(message || "", {
                     style: {
@@ -164,6 +166,7 @@ export class SmartContractService {
 
         }
         catch (error) {
+            console.error("Error creating repository:", error);
             return false;
         }
 
@@ -215,36 +218,71 @@ export class SmartContractService {
         // 2. Bakiyeyi SOL cinsine çevir (1 SOL = 1,000,000,000 lamports)
         return balanceLamports / LAMPORTS_PER_SOL;
     }
-    async loadBountyRepo(id: string, phantomWallet: PublicKey, sendTransaction: any, amount: number) {
+
+    async loadBountyRepo(id: string, phantomWallet: PublicKey, wallet: WalletContextState, amount: number) {
         try {
+            // Cüzdan bağlı mı?
+            if (!wallet.connected) {
+                throw new Error("Wallet is not connected. Please connect your wallet.");
+            }
 
-            const githubRepoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+            // Cüzdan işlem imzalamayı destekliyor mu?
+            if (!wallet.signTransaction) {
+                throw new Error("Your wallet does not support transaction signing.");
+            }
 
-            const instruction = SystemProgram.transfer({
-                fromPubkey: phantomWallet,
-                toPubkey: githubRepoPDA[0],
-                lamports: amount * LAMPORTS_PER_SOL,
-            });
-
+            const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
 
 
-            const latestBlockhash = await this.connection.getLatestBlockhash();
+            const loadBounty = new LoadBounty({ amount: BigInt(amount * LAMPORTS_PER_SOL) });
+            console.log("Amount => ", loadBounty.amount);
+
+            const encoded = serialize(LoadBountyShema, loadBounty);
+            const concat = Uint8Array.of(5, ...encoded);
+
+            const ownerWallet = new PublicKey("3FVfhromrZ4cdjb38kfp8R4EC5NHvdABRtKZqxumwVSM")
+
+
+            const instruction = new TransactionInstruction({
+                keys: [
+                    { pubkey: phantomWallet, isSigner: true, isWritable: true },
+                    { pubkey: ownerWallet, isSigner: false, isWritable: true },
+                    { pubkey: repoWalletPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+
+                ],
+                data: Buffer.from(concat),
+                programId: this.programId
+            })
+
 
             const message = new TransactionMessage({
                 instructions: [instruction],
-                payerKey: phantomWallet,
-                recentBlockhash: latestBlockhash.blockhash
-            }).compileToLegacyMessage()
+                payerKey: this.payer.publicKey,
+                recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+            }).compileToV0Message();
 
-            const transaction = new VersionedTransaction(message);
+            const tx = new VersionedTransaction(message);
 
-            const signature = await sendTransaction(transaction, this.connection);
+            
+
+            tx.sign([this.payer]);
+
+
+            // İşlemi imzala
+            const signedTransaction = await wallet.signTransaction(tx);
+
+            // İşlemi gönder
+            const sig = await this.connection.sendRawTransaction(
+                signedTransaction.serialize()
+            );
 
             toast.success("Bounty loaded successfully");
-            toast.success(signature);
+            toast.success(sig);
+            console.log("Bounty loaded successfully. TX Signature:", sig);
 
-
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error loading bounty:", error);
             toast.error("Error loading bounty");
         }
