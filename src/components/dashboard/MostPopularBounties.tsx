@@ -9,6 +9,7 @@ import {
   TableCell,
   Button,
   Pagination,
+  Chip,
 } from "@nextui-org/react";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { GithubRepo } from "@/Schema/Repository";
@@ -45,6 +46,10 @@ export default function MostPopularBounties() {
     {
       key: "repo_url",
       label: "REPO URL",
+    },
+    {
+      key: "is_active",
+      label: "Is Active",
     },
     {
       key: "id",
@@ -108,6 +113,20 @@ export default function MostPopularBounties() {
             >
               Detail
             </Button>
+          );
+        case "is_active":
+          return (
+            <div className="flex justify-center gap-2">
+              {cellValue === 1 ? (
+                <Chip color="success" variant="flat">
+                  Active
+                </Chip>
+              ) : (
+                <Chip color="danger" variant="flat">
+                  Passive
+                </Chip>
+              )}
+            </div>
           );
         default:
           return <span>{cellValue}</span>;

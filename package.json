@@ -12,6 +12,7 @@
     "@next/env": "^14.2.13",
     "@nextui-org/button": "^2.0.37",
     "@nextui-org/card": "^2.0.33",
+    "@nextui-org/chip": "^2.0.33",
     "@nextui-org/code": "^2.0.32",
     "@nextui-org/input": "^2.2.4",
     "@nextui-org/modal": "^2.0.39",

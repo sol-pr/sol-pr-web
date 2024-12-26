@@ -11,6 +11,7 @@ export function repoSchemaToModel(GithubRepo: GithubRepo): RepositoryModel {
         repo_url: GithubRepo.repo_url,
         repo_name: GithubRepo.repo_name,
         repo_description: GithubRepo.repo_description,
+        is_active: GithubRepo.is_active,
         total_pull_requests: Number(GithubRepo.total_pull_requests), // bigint -> number
         pull_request_limit: Number(GithubRepo.pull_request_limit), // bigint -> number
         reward_per_pull_request: Number(GithubRepo.reward_per_pull_request) / LAMPORTS_PER_SOL, // bigint -> number

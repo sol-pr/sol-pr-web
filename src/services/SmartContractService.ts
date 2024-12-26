@@ -135,7 +135,6 @@ export class SmartContractService {
             tx.sign([this.payer]);
 
             const response = await this.connection.sendTransaction(tx).catch((error: SendTransactionError) => {
-                //const message = error.logs?.[2];
                 console.log("Error creating repository:", error);
                 const message = "Repository already exists";
                 toast.error(message || "", {
@@ -184,7 +183,7 @@ export class SmartContractService {
                     GithubRepo,
                     account.account.data
                 );
-
+                console.log("RepoData->", repoData);
                 githubRepos.push(repoData);
             } catch (err) {
                 console.error("Error deserializing account data:", err);
@@ -231,8 +230,9 @@ export class SmartContractService {
                 throw new Error("Your wallet does not support transaction signing.");
             }
 
-            const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
+            const repoPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_pda"), Buffer.from(id)], this.programId);
 
+            const repoWalletPDA = PublicKey.findProgramAddressSync([Buffer.from("repo_wallet"), Buffer.from(id)], this.programId);
 
             const loadBounty = new LoadBounty({ amount: BigInt(amount * LAMPORTS_PER_SOL) });
             console.log("Amount => ", loadBounty.amount);
@@ -248,6 +248,7 @@ export class SmartContractService {
                     { pubkey: phantomWallet, isSigner: true, isWritable: true },
                     { pubkey: ownerWallet, isSigner: false, isWritable: true },
                     { pubkey: repoWalletPDA[0], isSigner: false, isWritable: true },
+                    { pubkey: repoPDA[0], isSigner: false, isWritable: true },
                     { pubkey: this.payer.publicKey, isSigner: true, isWritable: true },
                     { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
 
@@ -265,7 +266,7 @@ export class SmartContractService {
 
             const tx = new VersionedTransaction(message);
 
-            
+
 
             tx.sign([this.payer]);
 

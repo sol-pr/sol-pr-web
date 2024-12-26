@@ -14,6 +14,7 @@ export class GitGubServices {
         returnRepo.repo_url = data.html_url;
         returnRepo.repo_name = data.name;
         returnRepo.repo_description = data.description || " ";
+        returnRepo.is_active = 0;
         returnRepo.owner_wallet_address = new Uint8Array(32);
         returnRepo.pull_request_limit = BigInt(0);
         returnRepo.reward_per_pull_request = BigInt(0);

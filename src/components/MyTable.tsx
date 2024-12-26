@@ -8,19 +8,15 @@ import {
   TableRow,
   TableCell,
   Pagination,
-  Link,
   Button,
+  Chip,
 } from "@nextui-org/react";
 import { Title } from "./Title";
 import { SmartContractService } from "@/services/SmartContractService";
 import { GithubRepo } from "@/Schema/Repository";
 import { repoSchemaToModel } from "@/services/utils";
 import { useRouter } from "next/navigation";
-import {
-  Github,
-  GitPullRequestArrow,
-  SquareArrowOutUpRight,
-} from "lucide-react";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 export default function MyTable() {
   const [repos, setRepos] = useState<GithubRepo[] | null>();
@@ -43,6 +39,10 @@ export default function MyTable() {
     {
       key: "repo_description",
       label: "Repo Description",
+    },
+    {
+      key: "is_active",
+      label: "Is Active",
     },
     {
       key: "pull_request_limit",
@@ -87,6 +87,20 @@ export default function MyTable() {
             <div className="flex justify-center gap-2">
               <span> {cellValue}</span>
               <span className="opacity-25"> SOL</span>
+            </div>
+          );
+        case "is_active":
+          return (
+            <div className="flex justify-center gap-2">
+              {cellValue === 1 ? (
+                <Chip color="success" variant="flat">
+                  Active
+                </Chip>
+              ) : (
+                <Chip color="danger" variant="flat">
+                  Passive
+                </Chip>
+              )}
             </div>
           );
         case "repo_url":
